@@ -1,1 +1,2 @@
-# Seedyfiuba_Back_users
+# Branch de desarrollo del servicio usuarios del backend
+# Realizar un pull request para mergear a main
