@@ -1,60 +1,24 @@
 import { ApiError } from "../errors/ApiError";
-import Users from "../models/Users";
+import Users, { validateUser } from "../models/Users";
 
 export async function getUsers(req, res) {
     const users = await Users.findAll();
     res.json({
+        message: "All user information retrieved",
         data: users
     });
 }
-/*
-export async function createUser(req, res, next) {
-    try {
-        const { id,
-                firstname, 
-                lastname, 
-                email, 
-                birthdate, 
-                signindate } = req.body;
-    
-        const newUser = await Users.create(
-            {   id,
-                firstname, 
-                lastname, 
-                email, 
-                birthdate, 
-                signindate },
 
-        {  fields: ['id', 'firstname', 'lastname', 'email', 'birthdate', 'signindate']});
-
-        return res.status(200).json({
-            message: 'User created successfully',
-            data: newUser
-        });
-    } catch (e) {
-        console.log(e);
-        res.status(500).json({
-            message: 'Something went wrong',
-            data: {}
-        });
-    }
-}
-*/
 export async function createUser(req, res) {
-    const { id,
-            firstname, 
-            lastname, 
-            email, 
-            birthdate, 
-            signindate } = req.body;
+    
+    const { error, value} = validateUser(req.body);
+    if (error) throw ApiError.badRequest(error.message);
+    
+    const userInDatabase = await Users.findByPk(req.body.id);
+    if (userInDatabase) throw ApiError.badRequest("ID already in use");
 
     const newUser = await Users.create(
-        {   id,
-            firstname, 
-            lastname, 
-            email, 
-            birthdate, 
-            signindate }, 
+        value, 
         {
             fields: ['id', 
                      'firstname', 
@@ -64,7 +28,7 @@ export async function createUser(req, res) {
                      'signindate']
     });
         
-    return res.status(200).json({
+    return res.status(201).json({
         message: 'User created successfully',
         data: newUser
     });
@@ -73,8 +37,18 @@ export async function createUser(req, res) {
 export async function getOneUser(req, res) {
     const { id } = req.params;
     const user = await Users.findByPk(id);
-    if (user) return res.status(200).json({ data: user });
+    if (user) return res.status(200).json({
+        message: "User information retrieved",
+        data: user,
+    });
     throw ApiError.notFound("User not found");
+}
+
+export async function userExists(req, res) {
+    const { id } = req.params;
+    const user = await Users.findByPk(id);
+    if (user) return res.status(200).json({ response: true });
+    return res.status(200).json({ response: false });
 }
 
 export async function deleteUser(req, res) {
@@ -100,7 +74,15 @@ export async function updateUser(req, res) {
             email, 
             birthdate, 
             signindate } = req.body;
-
+    const { error } = validateUser({
+            id,
+            firstname, 
+            lastname, 
+            email, 
+            birthdate, 
+            signindate
+    });
+    if (error) throw ApiError.badRequest(error.message);
     const userUpdated = await Users.update(
         {   firstname, 
             lastname, 

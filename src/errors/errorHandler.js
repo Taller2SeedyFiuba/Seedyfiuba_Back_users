@@ -11,21 +11,25 @@ export function notDefinedHandler(req, res, next){
 export function errorHandler(error, req, res, next){
     if (error instanceof ApiError){
         return res.status(error.code).json({
-            "error" : error.message
+            "error" : error.message,
+            "data" : {}
         })
     }
     if (error instanceof DatabaseError){
         return res.status(400).json({
-            "error" : error.message
+            "error" : error.message,
+            "data" : {}
         })
     }
     if (error instanceof Error){
         return res.status(error.status || 500).json({
-            "error" : error.message
+            "error" : error.message,
+            "data" : {}
         })
     }
 
     return res.status(500).json({
-        "error": "Error on server"
+        "error": "Error on server",
+        "data" : {}
     })
 }

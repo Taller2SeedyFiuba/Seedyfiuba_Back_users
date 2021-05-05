@@ -1,5 +1,6 @@
 import Sequelize from "sequelize";
 import { sequelize } from "../database/database";
+import Joi from "joi"
 
 const Users = sequelize.define('users', {
     id: {
@@ -9,13 +10,7 @@ const Users = sequelize.define('users', {
     },
     firstname: {
         type: Sequelize.CHAR(30),
-        allowNull: false,
-        validate: {
-            len: {
-                args: [1, 29],
-                msg: "Please, enter a non empty and valid first name of 29 characters max length"
-            }
-        }
+        allowNull: false
     },
     lastname: {
         type: Sequelize.CHAR(30)
@@ -33,5 +28,39 @@ const Users = sequelize.define('users', {
     timestamps: false
 });
 
+
+export function validateUser(user){
+
+    const JoiSchema = Joi.object({
+
+        id:        Joi.number().required(),  
+        firstname: Joi.string()
+                   .min(5)
+                   .max(30)
+                   .required()
+                   .messages({
+                       'string.base': `Tu nombre solo puede contener texto`,
+                       'string.empty': `No podes tener un nombre vacio`,
+                       'string.min': `Tu nombre debe tener una longitud minima de {#limit}`,
+                       'string.max': `Tu nombre debe tener una longitud maxima de {#limit}`,
+                       'any.required': `Necesitas proporcionar un nombre`
+                   }),
+        lastname:  Joi.string()
+                   .min(1)
+                   .max(30)
+                   .required(),
+        email:     Joi.string()
+                   .email()
+                   .min(5)
+                   .max(50)
+                   .required(),
+        birthdate: Joi.date()
+                   .required(),
+        signindate: Joi.date()
+                   .required()
+    }).options({abortEarly: false});//abortEarly: true, lanza excepcion apenas se detecta error
+
+    return JoiSchema.validate(user);
+}
 
 export default Users;

@@ -20,7 +20,7 @@ export const sequelize = new Sequelize(
 
 //Chequeamos que se establezca la conexion con la base de datos
 sequelize.authenticate().then(() => {
-        console.log('La conexion con la base de datos se ha realizado satisfactoriamente.');
-    }).catch(err => {
-        console.error('Ha fallado la conexion con la base de datos:', err);
-    });
+    console.log('La conexion con la base de datos se ha realizado satisfactoriamente.');
+}).catch(err => {
+    console.error('Ha fallado la conexion con la base de datos:', err);
+});
