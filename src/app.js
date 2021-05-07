@@ -1,12 +1,13 @@
-import express, { json } from 'express';
-import morgan from 'morgan';
+const express = require('express');
+const json = require('express').json;
+const morgan = require('morgan');
 
 //Importamos rutas/endpoints
-import userRoutes from "./routes/users";
-import generalRoutes from "./routes/general"
+const userRoutes = require("./routes/users");
+const generalRoutes = require("./routes/general");
 
 //Importamos handlers de error
-import { notDefinedHandler, errorHandler} from "./errors/errorHandler"
+const { notDefinedHandler, errorHandler} = require("./errors/errorHandler");
 
 //Iniciamos la aplicacion
 const app = express();
@@ -24,4 +25,5 @@ app.use('/api/users', userRoutes);
 app.use(notDefinedHandler);
 app.use(errorHandler);
 
-export default app;
+
+module.exports = { app };

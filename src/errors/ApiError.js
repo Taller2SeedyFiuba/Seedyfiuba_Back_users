@@ -1,4 +1,4 @@
-export class ApiError{
+class ApiError{
     constructor(code, message){
         this.code = code;
         this.message = message;
@@ -16,3 +16,5 @@ export class ApiError{
         return new ApiError(500, message);
     }
 };
+
+module.exports = { ApiError };

@@ -1,9 +1,8 @@
 -- Inicializa la base de datos, creando las tablas y las restricciones entre ellas.
 
-DROP TABLE IF EXISTS taller_2.public.projects;
-DROP TABLE IF EXISTS taller_2.public.users;
+DROP TABLE IF EXISTS users;
 
-CREATE TABLE taller_2.public.users(
+CREATE TABLE users(
 	id INTEGER,
 	firstname VARCHAR(30) NOT NULL CHECK (firstname <> ''),
 	lastname VARCHAR(30) NOT NULL CHECK (lastname <> ''),
@@ -12,7 +11,7 @@ CREATE TABLE taller_2.public.users(
 	signindate date NOT NULL
 );
 
-ALTER TABLE taller_2.public.users ADD CONSTRAINT pk_users PRIMARY KEY(id);
+ALTER TABLE users ADD CONSTRAINT pk_users PRIMARY KEY(id);
 -- ALTER TABLE taller_2.public.users ADD CONSTRAINT firstname_empty_users CHECK(firstname <> '');
 -- ALTER TABLE taller_2.public.users ADD CONSTRAINT lastname_empty_users CHECK(lastname <> '');
 -- ALTER TABLE taller_2.public.users ADD CONSTRAINT email_empty_users CHECK(birthdate <> '');

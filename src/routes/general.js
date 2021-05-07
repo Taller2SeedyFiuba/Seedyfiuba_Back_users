@@ -1,9 +1,9 @@
-import { Router } from "express";
+const { Router }= require('express');
 const router = Router();
 
-import { 
+const { 
     getDatabaseStatus
-} from "../controllers/general.controller";
+} = require("../controllers/general.controller");
 
 const use = fn => (req, res, next) =>
     Promise.resolve(fn(req, res, next)).catch(next);
@@ -12,4 +12,4 @@ const use = fn => (req, res, next) =>
 
 router.get('/status', use(getDatabaseStatus));
 
-export default router;
+module.exports = router

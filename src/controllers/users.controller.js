@@ -1,7 +1,7 @@
-import { ApiError } from "../errors/ApiError";
-import Users, { validateUser } from "../models/Users";
+const { ApiError } = require("../errors/ApiError");
+const { Users, validateUser } = require("../models/Users");
 
-export async function getUsers(req, res) {
+async function getUsers(req, res) {
     const users = await Users.findAll();
     res.json({
         message: "All user information retrieved",
@@ -9,9 +9,9 @@ export async function getUsers(req, res) {
     });
 }
 
-export async function createUser(req, res) {
+async function createUser(req, res) {
     
-    const { error, value} = validateUser(req.body);
+    const { error, value } = validateUser(req.body);
     if (error) throw ApiError.badRequest(error.message);
     
     const userInDatabase = await Users.findByPk(req.body.id);
@@ -34,7 +34,7 @@ export async function createUser(req, res) {
     });
 }
 
-export async function getOneUser(req, res) {
+async function getOneUser(req, res) {
     const { id } = req.params;
     const user = await Users.findByPk(id);
     if (user) return res.status(200).json({
@@ -44,14 +44,14 @@ export async function getOneUser(req, res) {
     throw ApiError.notFound("User not found");
 }
 
-export async function userExists(req, res) {
+async function userExists(req, res) {
     const { id } = req.params;
     const user = await Users.findByPk(id);
     if (user) return res.status(200).json({ response: true });
     return res.status(200).json({ response: false });
 }
 
-export async function deleteUser(req, res) {
+async function deleteUser(req, res) {
 
     const { id } = req.params;
     const deletedUser = await Users.destroy({
@@ -67,7 +67,7 @@ export async function deleteUser(req, res) {
     throw ApiError.notFound("User not found");
 }
 
-export async function updateUser(req, res) {
+async function updateUser(req, res) {
     const { id } = req.params;
     const { firstname, 
             lastname, 
@@ -99,3 +99,11 @@ export async function updateUser(req, res) {
     }
     throw ApiError.notFound("User not found");
 }
+
+module.exports = {  createUser,
+                    getUsers,
+                    userExists,
+                    getOneUser,
+                    deleteUser,
+                    updateUser
+                }

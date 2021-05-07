@@ -1,6 +1,6 @@
-import Sequelize from "sequelize";
-import { sequelize } from "../database/database";
-import Joi from "joi"
+const Sequelize = require("sequelize");
+const { sequelize } = require("../database/database");
+const Joi = require("joi");
 
 const Users = sequelize.define('users', {
     id: {
@@ -29,7 +29,7 @@ const Users = sequelize.define('users', {
 });
 
 
-export function validateUser(user){
+function validateUser(user){
 
     const JoiSchema = Joi.object({
 
@@ -63,4 +63,5 @@ export function validateUser(user){
     return JoiSchema.validate(user);
 }
 
-export default Users;
+module.exports = {  validateUser,
+                    Users  }

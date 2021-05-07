@@ -1,22 +1,9 @@
-import Sequelize from 'sequelize';
+const Sequelize = require("sequelize");
 
-export const sequelize = new Sequelize(
-    'taller_2',
-    'postgres',
-    'root',
-    {
-        host: 'localhost',
-        port: 5432,//5000, //Default: 5432
-        dialect: 'postgres', 
-        pool: {
-            max: 5,
-            min: 0,
-            require: 30000,
-            idle: 10000
-        },
-        logging: false
-    }
-);
+console.log(process.env.DATABASE_URL)
+const sequelize = new Sequelize(process.env.DATABASE_URL, {
+    logging: false
+});
 
 //Chequeamos que se establezca la conexion con la base de datos
 sequelize.authenticate().then(() => {
@@ -24,3 +11,5 @@ sequelize.authenticate().then(() => {
 }).catch(err => {
     console.error('Ha fallado la conexion con la base de datos:', err);
 });
+
+module.exports = { sequelize };
