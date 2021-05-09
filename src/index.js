@@ -6,6 +6,9 @@ function main() {
 
   const database = new DataBase();
   const app = createApp(database);
+
+  
+
   app.listen(PORT, () => {
     console.log(`Servidor escuchando en http://localhost:${PORT}`)
   });

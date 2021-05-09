@@ -54,7 +54,7 @@ const app = createApp(database)
 
 
 describe('POST /users', () => {
-  debugger;
+  //debugger;
   beforeEach(() => {
     createUser.mockReset()
     deleteUser.mockReset()
