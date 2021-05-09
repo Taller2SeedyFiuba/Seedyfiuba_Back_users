@@ -14,12 +14,10 @@ services:
         networks:
             - my-net
         ports:
-            - ${PORT}:${PORT}
-            - 8000:8000
-        #command:
-        #    - npm run dev
+            - 8080:8080
         depends_on:
             - psql-container
+        command: npm run dev
     psql-container:
         image: postgres
         container_name: psql-container
@@ -28,10 +26,10 @@ services:
             - POSTGRES_PASSWORD=postgres
         volumes:
             - ./sql/Inicializar_base.sql:/docker-entrypoint-initdb.d/init.sql
+        ports:
+            - 5432:5432
         networks:
             - my-net
-        #command: postgres -p ${DATABASE_PORT}
-        
 networks:
     my-net:
         driver: bridge
