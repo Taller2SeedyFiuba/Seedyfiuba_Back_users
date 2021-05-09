@@ -1,12 +1,12 @@
-const { Router }= require('express');
+const { Router } = require('express');
 const router = Router();
 
-const { 
-    getDatabaseStatus
+const {
+  getDatabaseStatus
 } = require("../controllers/general.controller");
 
 const use = fn => (req, res, next) =>
-    Promise.resolve(fn(req, res, next)).catch(next);
+  Promise.resolve(fn(req, res, next)).catch(next);
 
 // /api/general/status
 
