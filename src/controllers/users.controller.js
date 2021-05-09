@@ -1,109 +1,86 @@
 const { ApiError } = require("../errors/ApiError");
-const { Users, validateUser } = require("../models/Users");
 
-async function getUsers(req, res) {
-    const users = await Users.findAll();
-    res.json({
-        message: "All user information retrieved",
-        data: users
-    });
-}
-
-async function createUser(req, res) {
+class UsersController{
     
-    const { error, value } = validateUser(req.body);
-    if (error) throw ApiError.badRequest(error.message);
-    
-    const userInDatabase = await Users.findByPk(req.body.id);
-    if (userInDatabase) throw ApiError.badRequest("ID already in use");
+    constructor(aDatabase){
+        this.database = aDatabase;
+        this.validateUser = aDatabase.getUserValidator();
+    }
 
-    const newUser = await Users.create(
-        value, 
-        {
-            fields: ['id', 
-                     'firstname', 
-                     'lastname', 
-                     'email', 
-                     'birthdate', 
-                     'signindate']
-    });
+    async getUsers(req, res) {
+        //console.log(this.database)
+        const users = await this.database.getAllUsers();
+        res.json({
+            message: "All user information retrieved",
+            data: users
+        });
+    }
+
+    async createUser(req, res) {
+        const { error, value } = this.validateUser(req.body);
+        if (error) throw ApiError.badRequest(error.message);
         
-    return res.status(201).json({
-        message: 'User created successfully',
-        data: newUser
-    });
-}
+        const userInDatabase = await this.database.getUser(req.body.id);
+        if (userInDatabase) throw ApiError.badRequest("ID already in use");
 
-async function getOneUser(req, res) {
-    const { id } = req.params;
-    const user = await Users.findByPk(id);
-    if (user) return res.status(200).json({
-        message: "User information retrieved",
-        data: user,
-    });
-    throw ApiError.notFound("User not found");
-}
+        const newUser = await this.database.createUser(req.body);
 
-async function userExists(req, res) {
-    const { id } = req.params;
-    const user = await Users.findByPk(id);
-    if (user) return res.status(200).json({ response: true });
-    return res.status(200).json({ response: false });
-}
+        return res.status(201).json({
+            message: 'User created successfully',
+            data: newUser
+        });
+    }
 
-async function deleteUser(req, res) {
+    async getOneUser(req, res) {
+        const { id } = req.params;
+        if (isNaN(id)) throw ApiError.badRequest("id must be a number")
+        const user = await this.database.getUser(id)
+        if (user) return res.status(200).json({
+            message: "User information retrieved",
+            data: user,
+        });
+        throw ApiError.notFound("User not found");
+    }
 
-    const { id } = req.params;
-    const deletedUser = await Users.destroy({
-        where: {
-            id
+    async userExists(req, res) {
+        const { id } = req.params;
+        if (isNaN(id)) throw ApiError.badRequest("id must be a number")
+        const user = await this.database.getUser(id)
+        if (user) return res.status(200).json({ response: true });
+        return res.status(200).json({ response: false });
+    }
+
+    async deleteUser(req, res) {
+
+        const { id } = req.params;
+        if (isNaN(id)) throw ApiError.badRequest("id must be a number")
+        const deletedUser = await this.database.deleteUser(id)
+        if (deletedUser){
+            return res.status(200).json({
+                message: 'User deleted successfully'
+            });
         }
-    });
-    if (deletedUser){
-        return res.status(200).json({
-            message: 'User deleted successfully'
-        });
+        throw ApiError.notFound("User not found");
     }
-    throw ApiError.notFound("User not found");
+
+    async updateUser(req, res) {
+        const { id } = req.params;
+        if (isNaN(id)) throw ApiError.badRequest("id must be a number")
+        const newData = req.body;
+        const finalUser = newData
+        finalUser['id'] = id;
+        const { error } = this.validateUser(finalUser);
+        if (error) throw ApiError.badRequest(error.message);
+        const userUpdated = await this.database.updateUser(id, newData);
+        if (userUpdated){
+            return res.status(200).json({
+                message: 'User updated successfully',
+                data: userUpdated
+            });
+        }
+        throw ApiError.notFound("User not found");
+    }
 }
 
-async function updateUser(req, res) {
-    const { id } = req.params;
-    const { firstname, 
-            lastname, 
-            email, 
-            birthdate, 
-            signindate } = req.body;
-    const { error } = validateUser({
-            id,
-            firstname, 
-            lastname, 
-            email, 
-            birthdate, 
-            signindate
-    });
-    if (error) throw ApiError.badRequest(error.message);
-    const userUpdated = await Users.update(
-        {   firstname, 
-            lastname, 
-            email, 
-            birthdate, 
-            signindate },
-        {   
-            where: { id }
-        });
-    if (userUpdated){
-        return res.status(200).json({
-            message: 'User updated successfully'
-        });
-    }
-    throw ApiError.notFound("User not found");
-}
 
-module.exports = {  createUser,
-                    getUsers,
-                    userExists,
-                    getOneUser,
-                    deleteUser,
-                    updateUser
-                }
+module.exports = { UsersController }

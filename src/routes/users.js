@@ -1,27 +1,28 @@
 const router = require("express").Router();
+const { validateUser } = require("../database/models/users")
+const { UsersController } = require("../controllers/users.controller");
 
-const { 
-    createUser,
-    getUsers,
-    userExists,
-    getOneUser,
-    deleteUser,
-    updateUser
-} = require("../controllers/users.controller");
+function getUsersRouter(database) {
 
-const use = fn => (req, res, next) =>
-    Promise.resolve(fn(req, res, next)).catch(next);
+    const uc = new UsersController(database, validateUser);
 
-// /api/users/
+    //Permite atrapar errores sin necesidad de try catch
+    const use = fn => (req, res, next) =>
+        Promise.resolve(fn(req, res, next)).catch(next);
 
-router.post('/', use(createUser));
-router.get('/', use(getUsers));
+    // /api/users/
+    //const __createUser = use(uc.createUser.bind(uc))  TODO: ver si podemos simplificar notacion con una anonima
+    router.post('/', use(uc.createUser.bind(uc)));
+    router.get('/', use(uc.getUsers.bind(uc)));
 
-// /api/users/:userID
+    // /api/users/:userID
 
-router.get('/exists/:id', use(userExists));
-router.get('/:id', use(getOneUser));
-router.delete('/:id', use(deleteUser));
-router.put('/:id', use(updateUser));
+    router.get('/exists/:id', use(uc.userExists.bind(uc)));
+    router.get('/:id', use(uc.getOneUser.bind(uc)));
+    router.delete('/:id', use(uc.deleteUser.bind(uc)));
+    router.put('/:id', use(uc.updateUser.bind(uc)));
 
-module.exports = router;
+    return router;
+}
+
+module.exports = { getUsersRouter };

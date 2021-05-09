@@ -3,27 +3,30 @@ const json = require('express').json;
 const morgan = require('morgan');
 
 //Importamos rutas/endpoints
-const userRoutes = require("./routes/users");
+const { getUsersRouter } = require("./routes/users");
 const generalRoutes = require("./routes/general");
 
 //Importamos handlers de error
 const { notDefinedHandler, errorHandler} = require("./errors/errorHandler");
 
-//Iniciamos la aplicacion
-const app = express();
+function createApp(database){
 
-//Middlewares
+    //Iniciamos la aplicacion
+    const app = express();
 
-app.use(morgan('dev')); //Escupir a archivo con una ip y timestamp.
-app.use(json());
+    //Middlewares
+    app.use(morgan('dev')); //Escupir a archivo con una ip y timestamp.
+    app.use(json());
 
-//Rutas
+    //Rutas
 
-app.use('/api/general', generalRoutes);
-app.use('/api/users', userRoutes);
+    app.use('/api/general', generalRoutes);
+    app.use('/api/users', getUsersRouter(database));
 
-app.use(notDefinedHandler);
-app.use(errorHandler);
+    app.use(notDefinedHandler);
+    app.use(errorHandler);
 
+    return app;
+}
 
-module.exports = { app };
+module.exports = { createApp };

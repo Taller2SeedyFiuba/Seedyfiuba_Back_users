@@ -1,8 +1,8 @@
 const Sequelize = require("sequelize");
-const { sequelize } = require("../database/database");
 const Joi = require("joi");
 
-const Users = sequelize.define('users', {
+
+const UserModel = {
     id: {
         type: Sequelize.INTEGER,
         primaryKey: true,
@@ -24,10 +24,7 @@ const Users = sequelize.define('users', {
     signindate: {
         type: Sequelize.DATE
     },
-}, {
-    timestamps: false
-});
-
+}
 
 function validateUser(user){
 
@@ -35,7 +32,7 @@ function validateUser(user){
 
         id:        Joi.number().required(),  
         firstname: Joi.string()
-                   .min(5)
+                   .min(1)
                    .max(30)
                    .required()
                    .messages({
@@ -63,5 +60,5 @@ function validateUser(user){
     return JoiSchema.validate(user);
 }
 
-module.exports = {  validateUser,
-                    Users  }
+module.exports = {  UserModel,
+                    validateUser  }
