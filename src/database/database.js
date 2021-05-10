@@ -31,15 +31,10 @@ class DataBase {
   }
 
   async deleteUser(id) {
-    const userToDelete = await this.getUser(id)
-    if (!userToDelete) return undefined
-    await this.users.destroy({ where: { id } });
-    return userToDelete
+    return await this.users.destroy({ where: { id } });
   }
 
   async updateUser(id, newData) {
-    const userToUpdate = await this.getUser(id);
-    if (!userToUpdate) return undefined;
     return await this.users.update(newData, { where: { id } });
   }
 

@@ -8,21 +8,23 @@ services:
         restart: always
         environment:
             - PORT=8080
-            - DATABASE_URL=postgres://postgres:postgres@psql-container:5000/postgres
+            - DATABASE_URL=postgres://postgres:postgres@psql-container:5432/postgres
         networks:
             - my-net
         ports:
-            - 8080:8080
+            - ${PORT}:${PORT}
         depends_on:
             - psql-container
         command: npm run dev
     psql-container:
         image: postgres
         container_name: psql-container
+        environment:
+            - POSTGRES_PASSWORD=postgres
         volumes:
             - ./sql/Inicializar_base.sql:/docker-entrypoint-initdb.d/init.sql
         ports:
-            - 5000:5432
+            - 5430:5432
         networks:
             - my-net
             

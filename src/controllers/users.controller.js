@@ -32,8 +32,9 @@ class UsersController {
   }
 
   async getOneUser(req, res) {
-    const { id } = req.params;
-    if (isNaN(id)) throw ApiError.badRequest("id must be a number")
+    const { id: _id } = req.params;
+    if (isNaN(_id)) throw ApiError.badRequest("id must be a number")
+    const id = parseInt(_id, 10);
     const user = await this.database.getUser(id)
     if (user) return res.status(200).json({
       message: "User information retrieved",
@@ -43,8 +44,9 @@ class UsersController {
   }
 
   async userExists(req, res) {
-    const { id } = req.params;
-    if (isNaN(id)) throw ApiError.badRequest("id must be a number")
+    const { id: _id } = req.params;
+    if (isNaN(_id)) throw ApiError.badRequest("id must be a number")
+    const id = parseInt(_id, 10);
     const user = await this.database.getUser(id)
     if (user) return res.status(200).json({ response: true });
     return res.status(200).json({ response: false });
@@ -52,26 +54,34 @@ class UsersController {
 
   async deleteUser(req, res) {
 
-    const { id } = req.params;
-    if (isNaN(id)) throw ApiError.badRequest("id must be a number")
-    const deletedUser = await this.database.deleteUser(id)
-    if (!deletedUser) throw ApiError.notFound("User not found")
+    const { id: _id } = req.params;
+    if (isNaN(_id)) throw ApiError.badRequest("id must be a number")
+    const id = parseInt(_id, 10);
+    const userToDelete = await this.database.getUser(id)
+    if (!userToDelete) throw ApiError.notFound("User not found")
+    const userDeleted = await this.database.deleteUser(id)
+    if (!userDeleted) throw ApiError.serverError("Server error")
     return res.status(200).json({
       message: 'User deleted successfully',
-      data: deletedUser
+      data: userToDelete
     });
   }
 
   async updateUser(req, res) {
-    const { id } = req.params;
-    if (isNaN(id)) throw ApiError.badRequest("id must be a number")
+    const { id: _id } = req.params;
+    if (isNaN(_id)) throw ApiError.badRequest("id must be a number")
+    const id = parseInt(_id, 10);
     const newData = req.body;
     const finalUser = newData
     finalUser['id'] = id;
+
     const { error } = this.validateUser(finalUser);
     if (error) throw ApiError.badRequest(error.message);
-    const userUpdated = await this.database.updateUser(id, newData);
-    if (!userUpdated) throw ApiError.notFound("User not found")
+
+    const userToUpdate = await this.database.getUser(id);
+    if (!userToUpdate) throw ApiError.notFound("User not found")
+    const userUpdated = await this.database.updateUser(id, newData)
+    if (!userUpdated) throw ApiError.serverError("Server error")
     return res.status(200).json({
       message: 'User updated successfully',
       data: finalUser

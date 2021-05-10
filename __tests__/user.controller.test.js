@@ -1,15 +1,11 @@
 const request = require('supertest');
 const { createApp } = require('../src/app');
 const { jest: requiredJest } = require('@jest/globals');
-const { validateUser } = require("../src/database/models/users")
 
 //Mock de validador de usuario y base de datos
 
 const userValidator = requiredJest.fn(function (user) {
-  const value = user
-  return { value }
-  return user.id && user.firstname && user.lastname && user.birthdate /
-    user.signindate && user.email;
+  return { vakue : user}
 });
 
 const createUser = requiredJest.fn(async function (user) {
@@ -37,11 +33,6 @@ const getUserValidator = requiredJest.fn(function () {
   return userValidator;
 });
 
-/*
-const getUserValidator = () =>{
-  return validateUser;
-}
-*/
 const database = {
   createUser,
   deleteUser,
@@ -59,84 +50,605 @@ const app = createApp(database)
 
 
 
-describe('POST /users', () => {
-  debugger;
-  
-  beforeEach(() => {
-    createUser.mockReset()
-    deleteUser.mockReset()
-    updateUser.mockReset()
-    getUser.mockReset()
-    getAllUsers.mockReset()
-    getUserValidator.mockReset()
-    userValidator.mockReset()
+describe('POST /api', () => {
+
+  //Usuarios utilizados
+
+  const completeUser = {
+    id: 1,
+    firstname: 'Marcelo',
+    lastname: 'Lopez',
+    email: 'mlopez@fi.uba.ar',
+    birthdate: '1900-08-08',
+    signindate: '2020-09-09'
+  }
+
+  const incompleteUser = {
+    id: 1,
+    lastname: 'Lopez',
+    email: 'mlopez@fi.uba.ar',
+    birthdate: '1900-08-08',
+    signindate: '2020-09-09'
+  }
+
+  describe('Recibiendo un nuevo usuario con campos completos', () => {
+    //Antes de cada test queremos:
+    //  - Limpiar la cantidad de llamadas y argumentos de llamada.
+    //  - Setear el valor de retorno de cada mock utilizado
+
+    beforeEach(() => {
+      jest.clearAllMocks();
+      userValidator.mockReturnValueOnce({ value: completeUser });
+      getUser.mockResolvedValueOnce(undefined);
+      createUser.mockResolvedValueOnce(completeUser);
+    });
+    
+    test('Se valida que los campos sean correctos', async () => {
+      
+      const response = await request(app).post('/api').send(completeUser)
+      expect(userValidator.mock.calls.length).toBe(1);
+      expect(userValidator.mock.calls[0][0]).toEqual(completeUser);
+    })
+
+    test('Se valida que no exista un usuario en la base', async () => {
+      const response = await request(app).post('/api').send(completeUser)
+      expect(getUser.mock.calls.length).toBe(1);
+      expect(getUser.mock.calls[0][0]).toEqual(completeUser.id);
+    })
+    
+    test('Se crea un usuario en la base de datos', async () => {
+      const response = await request(app).post('/api').send(completeUser)
+      expect(createUser.mock.calls.length).toBe(1);
+      expect(createUser.mock.calls[0][0]).toEqual(completeUser);
+    })
+    
+    test('Se retorna codigo 201', async () => {
+      const response = await request(app).post('/api').send(completeUser)
+      expect(response.statusCode).toBe(201);
+    })
+    test("Se retorna un mensaje bajo el campo 'message'", async () => {
+      const response = await request(app).post('/api').send(completeUser)
+      expect(typeof response.body.message).toBe('string')
+      expect(response.body.message.length > 0).toBe(true)
+    })
+    test("Se retornan datos del usuario bajo el campo 'data'", async () => {
+      const response = await request(app).post('/api').send(completeUser)
+      expect(response.body.data).toEqual(completeUser);
+    })
   })
   
-  describe('Recibiendo un nuevo usuario con campos completos', () => {
-    const usuarioCompleto = {
+  describe('Cuando alguno de los campos falta', () => {
+    //Antes de cada test queremos:
+    //  - Limpiar la cantidad de llamadas y argumentos de llamada.
+    //  - Setear el valor de retorno de cada mock utilizado
+    beforeEach(() => {
+      jest.clearAllMocks();
+      userValidator.mockReturnValueOnce({ error: { message: "Error de validacion"} });
+    })
+    test('Se validan los campos recibidos', async () => {
+      const response = await request(app).post('/api').send(completeUser)
+      expect(userValidator.mock.calls.length).toBe(1);
+      expect(userValidator.mock.calls[0][0]).toEqual(completeUser);
+    })
+    test('No se intenta almacenar en la base de datos', async () => {
+      const response = await request(app).post('/api').send(completeUser)
+      expect(createUser.mock.calls.length).toBe(0);
+    })
+    test('Se retorna codigo 400', async () => {
+      const response = await request(app).post('/api').send(incompleteUser)
+      expect(response.statusCode).toBe(400);
+    })
+    test("Se retorna un objeto vacio bajo el campo 'data'", async () => {
+      const response = await request(app).post('/api').send(incompleteUser)
+      expect(response.body.data).toEqual({})
+    })
+    test("Se retorna un mensaje de error bajo el campo 'error'", async () => {
+      const response = await request(app).post('/api').send(incompleteUser)
+      expect(response.body.error).not.toBe(undefined)
+      expect(typeof response.body.error).toBe('string')
+      expect(response.body.error.length > 0).toBe(true)
+    })
+  })
+})
+
+
+describe('GET /api', () => {
+
+  const users = [
+    {
       id: 1,
       firstname: 'Marcelo',
       lastname: 'Lopez',
       email: 'mlopez@fi.uba.ar',
       birthdate: '1900-08-08',
       signindate: '2020-09-09'
-    }
-    test('Se valida que los campos sean correctos', async () => {
-
-      const response = await request(app).post('/api').send(usuarioCompleto)
-      expect(userValidator.mock.calls.length).toBe(1);
-      expect(userValidator.mock.calls[0][0]).toEqual(usuarioCompleto);
-
-    })
-
-    test('Se valida que no exista un usuario en la base', async () => {
-      userValidator.mockReturnValue({ value: usuarioCompleto });
-      const response = await request(app).post('/api').send(usuarioCompleto)
-      //console.log(response.body)
-      expect(getUser.mock.calls.length).toBe(1);
-      expect(getUser.mock.calls[0][0]).toEqual(usuarioCompleto.id);
-    })
-    
-    test('Se crea un usuario en la base de datos', async () => {
-      userValidator.mockReturnValue({ value: usuarioCompleto });
-      getUser.mockReturnValue(undefined);
-      const response = await request(app).post('/api').send(usuarioCompleto)
-      expect(createUser.mock.calls.length).toBe(1);
-      expect(createUser.mock.calls[0][0]).toEqual(usuarioCompleto);
-
-    })/*
-    //Retornamos codigo 201
-    test('Se retorna codigo 201', async () => {
-      getUser.mockReturnValue(undefined)
-      const response = await request(app).post('/api/users').send(usuarioCompleto)
-      console.log(response.error.message)
-      expect(response.statusCode).toBe(200);
-    })
-    //Retornamos un mensaje bajo el campo 'message'
-    test("Se retorna un mensaje bajo el campo 'message'", async () => {
-      const response = await request(app).post('/api/users').send(usuarioCompleto)
-      const passes = response.message && response.message.length > 0
-      expect(passes).toBe(true);
-    })
-    //Retornamos info del usuario creado bajo campo 'data'.
-  })
-
-  describe('Cuando alguno de los campos falta', () => {
-    const usuarioIncompleto = {
-      id: 1,
-      lastname: 'Lopez',
-      email: 'mlopez@fi.uba.ar',
+    },
+    {
+      id: 2,
+      firstname: 'Juan',
+      lastname: 'Martinez',
+      email: 'jmartinez@gmail.com',
       birthdate: '1900-08-08',
       signindate: '2020-09-09'
     }
-    test('Se retorna codigo 400', async () => {
-      const response = await request(app).post('/api/users').send(usuarioIncompleto)
-      expect(response.statusCode).toBe(400);
-    })
-    //Se retorna un objeto vacio bajo el campo 'data'
-    //Retornamos un mensaje bajo el campo 'error'
-  */
+  ]
+  //Antes de cada test queremos:
+  //  - Limpiar la cantidad de llamadas y argumentos de llamada.
+  //  - Setear el valor de retorno de cada mock utilizado
+  beforeEach(() => {
+    jest.clearAllMocks();
+    getAllUsers.mockResolvedValueOnce(users);
+  });
+    
+  test('Se obtienen todos los usuarios de la base de datos', async () => {
+    const response = await request(app).get('/api')
+    expect(getAllUsers.mock.calls.length).toBe(1);
   })
   
+  test('Se retorna codigo 200', async () => {
+    const response = await request(app).get('/api')
+    expect(response.statusCode).toBe(200);
+  })
+  test("Se retorna un mensaje bajo el campo 'message'", async () => {
+    const response = await request(app).get('/api')
+    expect(typeof response.body.message).toBe('string')
+    expect(response.body.message.length > 0).toBe(true)
+  })
+  test("Se retorna un vector de usuarios bajo el campo 'data'", async () => {
+    const response = await request(app).get('/api')
+    expect(response.body.data).toEqual(users);
+  })
+})
+
+
+describe('GET /api/{id}', () => {
+
+  //Usuarios utilizados
+
+  const user = {
+    id: 1,
+    firstname: 'Marcelo',
+    lastname: 'Lopez',
+    email: 'mlopez@fi.uba.ar',
+    birthdate: '1900-08-08',
+    signindate: '2020-09-09'
+  }
+
+  describe('Recibiendo un id perteneciente a un usuario almacenado', () => {
+    //Antes de cada test queremos:
+    //  - Limpiar la cantidad de llamadas y argumentos de llamada.
+    //  - Setear el valor de retorno de cada mock utilizado
+
+    beforeEach(() => {
+      jest.clearAllMocks();
+      getUser.mockResolvedValueOnce(user);
+    });
+  
+    test('Se obtiene el usuario de la base de datos', async () => {
+      const response = await request(app).get('/api/1')
+      expect(getUser.mock.calls.length).toBe(1);
+      expect(getUser.mock.calls[0][0]).toBe(1)
+    })
+
+    test('Se retorna codigo 200', async () => {
+      const response = await request(app).get('/api/1')
+      expect(response.statusCode).toBe(200);
+    })
+    test("Se retorna un mensaje bajo el campo 'message'", async () => {
+      const response = await request(app).get('/api/1')
+      expect(typeof response.body.message).toBe('string')
+      expect(response.body.message.length > 0).toBe(true)
+    })
+    test("Se retornan datos del usuario bajo el campo 'data'", async () => {
+      const response = await request(app).get('/api/1')
+      expect(response.body.data).toEqual(user);
+    })
+  })
+  
+  describe('Cuando el id no es numerico', () => {
+    //Antes de cada test queremos:
+    //  - Limpiar la cantidad de llamadas y argumentos de llamada.
+    //  - Setear el valor de retorno de cada mock utilizado
+    beforeEach(() => {
+      jest.clearAllMocks();
+    })
+    test('Se retorna codigo 400', async () => {
+      const response = await request(app).get('/api/a')
+      expect(response.statusCode).toBe(400);
+    })
+    test("Se retorna un objeto vacio bajo el campo 'data'", async () => {
+      const response = await request(app).get('/api/a')
+      expect(response.body.data).toEqual({})
+    })
+    test("Se retorna un mensaje de error bajo el campo 'error'", async () => {
+      const response = await request(app).get('/api/a')
+      expect(response.body.error).not.toBe(undefined)
+      expect(typeof response.body.error).toBe('string')
+      expect(response.body.error.length > 0).toBe(true)
+    })
+  })
+  describe('Cuando el id no referencia a ningun usuario de la base', () => {
+    //Antes de cada test queremos:
+    //  - Limpiar la cantidad de llamadas y argumentos de llamada.
+    //  - Setear el valor de retorno de cada mock utilizado
+    beforeEach(() => {
+      jest.clearAllMocks();
+      getUser.mockResolvedValueOnce(undefined)
+    })
+    test('Se consulta a la base de datos', async () => {
+      const response = await request(app).get('/api/100')
+      expect(getUser.mock.calls.length).toBe(1);
+      expect(getUser.mock.calls[0][0] == 100).toBe(true)
+    })
+    test('Se retorna codigo 404', async () => {
+      const response = await request(app).get('/api/100')
+      expect(response.statusCode).toBe(404);
+    })
+    test("Se retorna un objeto vacio bajo el campo 'data'", async () => {
+      const response = await request(app).get('/api/100')
+      expect(response.body.data).toEqual({})
+    })
+    test("Se retorna un mensaje de error bajo el campo 'error'", async () => {
+      const response = await request(app).get('/api/100')
+      expect(response.body.error).not.toBe(undefined)
+      expect(typeof response.body.error).toBe('string')
+      expect(response.body.error.length > 0).toBe(true)
+    })
+  })
+})
+
+
+
+describe('PUT /api/{id}', () => {
+
+  //Usuarios utilizados
+
+  const user = {
+    id: 1,
+    firstname: 'Marcelo',
+    lastname: 'Lopez',
+    email: 'mlopez@fi.uba.ar',
+    birthdate: '1900-08-08',
+    signindate: '2020-09-09'
+  }
+
+  const  newDataForUser = {
+    firstname: 'Marcelo',
+    lastname: 'Lopez',
+    email: 'marcelo.lopez@gmail.com',
+    birthdate: '1900-08-08',
+    signindate: '2020-09-09'
+  }
+
+  const resultingUser = newDataForUser
+  resultingUser['id'] = user.id
+
+  describe('Se envia un id perteneciente a un usuario almacenado', () => {
+
+
+    describe('Se reciben parametros correctos y no ocurren errores internos', () => {
+      //Antes de cada test queremos:
+      //  - Limpiar la cantidad de llamadas y argumentos de llamada.
+      //  - Setear el valor de retorno de cada mock utilizado
+
+      beforeEach(() => {
+        jest.clearAllMocks();
+        getUser.mockResolvedValueOnce(user);
+        userValidator.mockReturnValueOnce({ value: user });
+        updateUser.mockResolvedValueOnce(1)
+      }); 
+      test('Se validan nuevos datos a ingresar a la base', async () => {
+        const response = await request(app).put('/api/1').send(newDataForUser);
+        expect(userValidator.mock.calls.length).toBe(1);
+        expect(userValidator.mock.calls[0][0]).toEqual(resultingUser)
+      })
+
+      test('Se obtiene el usuario de la base de datos', async () => {
+        const response = await request(app).put('/api/1').send(newDataForUser);
+        expect(getUser.mock.calls.length).toBe(1);
+        expect(getUser.mock.calls[0][0]).toBe(1)
+      })
+
+      test('Se actualiza el usuario en la base de datos', async () => {
+        const response = await request(app).put('/api/1').send(newDataForUser);
+        expect(updateUser.mock.calls.length).toBe(1);
+        expect(updateUser.mock.calls[0][0]).toEqual(user.id)
+        expect(updateUser.mock.calls[0][1]).toEqual(newDataForUser)
+      })
+
+      test('Se retorna codigo 200', async () => {
+        const response = await request(app).put('/api/1').send(newDataForUser);
+        expect(response.statusCode).toBe(200);
+      })
+      test("Se retorna un mensaje bajo el campo 'message'", async () => {
+        const response = await request(app).put('/api/1').send(newDataForUser);
+        expect(typeof response.body.message).toBe('string')
+        expect(response.body.message.length > 0).toBe(true)
+      })
+      test("Se retornan datos del usuario actualizado bajo el campo 'data'", async () => {
+        const response = await request(app).put('/api/1').send(newDataForUser);
+        expect(response.body.data).toEqual(resultingUser);
+      })
+    })
+    describe('Se reciben parametros correctos y ocurre error interno', () => {
+      //Antes de cada test queremos:
+      //  - Limpiar la cantidad de llamadas y argumentos de llamada.
+      //  - Setear el valor de retorno de cada mock utilizado
+
+      beforeEach(() => {
+        jest.clearAllMocks();
+        getUser.mockResolvedValueOnce(user);
+        userValidator.mockReturnValueOnce({ value: user });
+        updateUser.mockResolvedValueOnce(undefined)
+      }); 
+      test('Se validan nuevos datos a ingresar a la base', async () => {
+        const response = await request(app).put('/api/1').send(newDataForUser);
+        expect(userValidator.mock.calls.length).toBe(1);
+        expect(userValidator.mock.calls[0][0]).toEqual(resultingUser)
+      })
+
+      test('Se obtiene el usuario de la base de datos', async () => {
+        const response = await request(app).put('/api/1').send(newDataForUser);
+        expect(getUser.mock.calls.length).toBe(1);
+        expect(getUser.mock.calls[0][0]).toBe(1)
+      })
+
+      test('Se intenta actualizar el usuario en la base de datos', async () => {
+        const response = await request(app).put('/api/1').send(newDataForUser);
+        expect(updateUser.mock.calls.length).toBe(1);
+        expect(updateUser.mock.calls[0][0]).toEqual(user.id)
+        expect(updateUser.mock.calls[0][1]).toEqual(newDataForUser)
+      })
+
+      test('Se retorna codigo 500', async () => {
+        const response = await request(app).put('/api/1').send(newDataForUser);
+        expect(response.statusCode).toBe(500);
+      })
+      test("Se retorna un objeto vacio bajo el campo 'data'", async () => {
+        const response = await request(app).put('/api/1').send(newDataForUser);
+        expect(response.body.data).toEqual({})
+      })
+      test("Se retorna un mensaje de error bajo el campo 'error'", async () => {
+        const response = await request(app).put('/api/1').send(newDataForUser);
+        expect(response.body.error).not.toBe(undefined)
+        expect(typeof response.body.error).toBe('string')
+        expect(response.body.error.length > 0).toBe(true)
+      });
+    })
+    describe('Se envia campo invalido por body', () => {
+      //Antes de cada test queremos:
+      //  - Limpiar la cantidad de llamadas y argumentos de llamada.
+      //  - Setear el valor de retorno de cada mock utilizado
+
+      beforeEach(() => {
+        jest.clearAllMocks();
+        userValidator.mockReturnValueOnce({ error: { message: "Error de validacion"} });
+      }); 
+      test('Se validan nuevos datos a ingresar a la base', async () => {
+        const response = await request(app).put('/api/1').send(newDataForUser);
+        expect(userValidator.mock.calls.length).toBe(1);
+        expect(userValidator.mock.calls[0][0]).toEqual(resultingUser)
+      })
+      test('Se retorna codigo 400', async () => {
+        const response = await request(app).put('/api/1').send(newDataForUser);
+        expect(response.statusCode).toBe(400);
+      })
+      test("Se retorna un objeto vacio bajo el campo 'data'", async () => {
+        const response = await request(app).put('/api/1').send(newDataForUser);
+        expect(response.body.data).toEqual({})
+      })
+      test("Se retorna un mensaje de error bajo el campo 'error'", async () => {
+        const response = await request(app).put('/api/1').send(newDataForUser);
+        expect(response.body.error).not.toBe(undefined)
+        expect(typeof response.body.error).toBe('string')
+        expect(response.body.error.length > 0).toBe(true)
+      });
+    })
+  })
+  describe('Se envia un id no numerico por parametro', () => {
+    //Antes de cada test queremos:
+    //  - Limpiar la cantidad de llamadas y argumentos de llamada.
+    //  - Setear el valor de retorno de cada mock utilizado
+
+    beforeEach(() => {
+      jest.clearAllMocks();
+    });
+    test('Se retorna codigo 400', async () => {
+      const response = await request(app).put('/api/a').send(newDataForUser);
+      expect(response.statusCode).toBe(400);
+    })
+    test("Se retorna un objeto vacio bajo el campo 'data'", async () => {
+      const response = await request(app).put('/api/a').send(newDataForUser);
+      expect(response.body.data).toEqual({})
+    })
+    test("Se retorna un mensaje de error bajo el campo 'error'", async () => {
+      const response = await request(app).put('/api/a').send(newDataForUser);
+      expect(response.body.error).not.toBe(undefined)
+      expect(typeof response.body.error).toBe('string')
+      expect(response.body.error.length > 0).toBe(true)
+    });
+  })
+  describe('Se envia un id que no coincide con un usuario almacenado', () => {
+    //Antes de cada test queremos:
+    //  - Limpiar la cantidad de llamadas y argumentos de llamada.
+    //  - Setear el valor de retorno de cada mock utilizado
+
+    beforeEach(() => {
+      jest.clearAllMocks();
+      userValidator.mockReturnValueOnce({ value : resultingUser})
+      getUser.mockResolvedValueOnce(undefined)
+    }); 
+    test('Se validan nuevos datos a ingresar a la base', async () => {
+      const response = await request(app).put('/api/1').send(newDataForUser);
+      expect(userValidator.mock.calls.length).toBe(1);
+      expect(userValidator.mock.calls[0][0]).toEqual(resultingUser)
+    })
+    test('Se obtiene el usuario de la base de datos', async () => {
+      const response = await request(app).put('/api/1').send(newDataForUser);
+      expect(getUser.mock.calls.length).toBe(1);
+      expect(getUser.mock.calls[0][0]).toBe(1)
+    })
+    test('Se retorna codigo 404', async () => {
+      const response = await request(app).put('/api/1').send(newDataForUser);
+      expect(response.statusCode).toBe(404);
+    })
+    test("Se retorna un objeto vacio bajo el campo 'data'", async () => {
+      const response = await request(app).put('/api/1').send(newDataForUser);
+      expect(response.body.data).toEqual({})
+    })
+    test("Se retorna un mensaje de error bajo el campo 'error'", async () => {
+      const response = await request(app).put('/api/1').send(newDataForUser);
+      expect(response.body.error).not.toBe(undefined)
+      expect(typeof response.body.error).toBe('string')
+      expect(response.body.error.length > 0).toBe(true)
+    });
+  })
+})
+
+
+describe('DELETE /api/{id}', () => {
+
+  //Usuarios utilizados
+
+  const user = {
+    id: 1,
+    firstname: 'Marcelo',
+    lastname: 'Lopez',
+    email: 'mlopez@fi.uba.ar',
+    birthdate: '1900-08-08',
+    signindate: '2020-09-09'
+  }
+
+  describe('Se envia un id perteneciente a un usuario almacenado', () => {
+
+
+    describe('Si no ocurren errores internos', () => {
+      //Antes de cada test queremos:
+      //  - Limpiar la cantidad de llamadas y argumentos de llamada.
+      //  - Setear el valor de retorno de cada mock utilizado
+
+      beforeEach(() => {
+        jest.clearAllMocks();
+        getUser.mockResolvedValueOnce(user);
+        deleteUser.mockResolvedValueOnce(1)
+      }); 
+
+      test('Se consulta la existencia del usuario en la base de datos', async () => {
+        const response = await request(app).delete('/api/1')
+        expect(getUser.mock.calls.length).toBe(1);
+        expect(getUser.mock.calls[0][0]).toBe(1)
+      })
+
+      test('Se elimina al usuario en la base de datos', async () => {
+        const response = await request(app).delete('/api/1')
+        expect(deleteUser.mock.calls.length).toBe(1);
+        expect(deleteUser.mock.calls[0][0]).toEqual(user.id)
+      })
+
+      test('Se retorna codigo 200', async () => {
+        const response = await request(app).delete('/api/1')
+        expect(response.statusCode).toBe(200);
+      })
+      test("Se retorna un mensaje bajo el campo 'message'", async () => {
+        const response = await request(app).delete('/api/1')
+        expect(typeof response.body.message).toBe('string')
+        expect(response.body.message.length > 0).toBe(true)
+      })
+      test("Se retornan datos del usuario borrado bajo el campo 'data'", async () => {
+        const response = await request(app).delete('/api/1')
+        expect(response.body.data).toEqual(user);
+      })
+    })
+    describe('Si ocurre un error interno', () => {
+      //Antes de cada test queremos:
+      //  - Limpiar la cantidad de llamadas y argumentos de llamada.
+      //  - Setear el valor de retorno de cada mock utilizado
+
+      beforeEach(() => {
+        jest.clearAllMocks();
+        getUser.mockResolvedValueOnce(user);
+        deleteUser.mockResolvedValueOnce(undefined)
+      }); 
+
+      test('Se consulta la existencia del usuario en la base de datos', async () => {
+        const response = await request(app).delete('/api/1')
+        expect(getUser.mock.calls.length).toBe(1);
+        expect(getUser.mock.calls[0][0]).toBe(1)
+      })
+
+      test('Se intenta eliminar al usuario en la base de datos', async () => {
+        const response = await request(app).delete('/api/1')
+        expect(deleteUser.mock.calls.length).toBe(1);
+        expect(deleteUser.mock.calls[0][0]).toEqual(user.id)
+      })
+
+      test('Se retorna codigo 500', async () => {
+        const response = await request(app).delete('/api/1')
+        expect(response.statusCode).toBe(500);
+      })
+      test("Se retorna un objeto vacio bajo el campo 'data'", async () => {
+        const response = await request(app).delete('/api/1')
+        expect(response.body.data).toEqual({})
+      })
+      test("Se retorna un mensaje de error bajo el campo 'error'", async () => {
+        const response = await request(app).delete('/api/1')
+        expect(response.body.error).not.toBe(undefined)
+        expect(typeof response.body.error).toBe('string')
+        expect(response.body.error.length > 0).toBe(true)
+      });
+    })
+  })
+  describe('Se envia un id no numerico por parametro', () => {
+    //Antes de cada test queremos:
+    //  - Limpiar la cantidad de llamadas y argumentos de llamada.
+    //  - Setear el valor de retorno de cada mock utilizado
+
+    beforeEach(() => {
+      jest.clearAllMocks();
+    });
+    test('Se retorna codigo 400', async () => {
+      const response = await request(app).delete('/api/a')
+      expect(response.statusCode).toBe(400);
+    })
+    test("Se retorna un objeto vacio bajo el campo 'data'", async () => {
+      const response = await request(app).delete('/api/a')
+      expect(response.body.data).toEqual({})
+    })
+    test("Se retorna un mensaje de error bajo el campo 'error'", async () => {
+      const response = await request(app).delete('/api/a')
+      expect(response.body.error).not.toBe(undefined)
+      expect(typeof response.body.error).toBe('string')
+      expect(response.body.error.length > 0).toBe(true)
+    });
+  })
+  describe('Se envia un id que no coincide con un usuario almacenado', () => {
+    //Antes de cada test queremos:
+    //  - Limpiar la cantidad de llamadas y argumentos de llamada.
+    //  - Setear el valor de retorno de cada mock utilizado
+
+    beforeEach(() => {
+      jest.clearAllMocks();
+      getUser.mockResolvedValueOnce(undefined);
+    }); 
+    test('Se consulta la existencia del usuario en la base de datos', async () => {
+      const response = await request(app).delete('/api/1')
+      expect(getUser.mock.calls.length).toBe(1);
+      expect(getUser.mock.calls[0][0]).toBe(1)
+    })
+    test('Se retorna codigo 404', async () => {
+      const response = await request(app).delete('/api/1')
+      expect(response.statusCode).toBe(404);
+    })
+    test("Se retorna un objeto vacio bajo el campo 'data'", async () => {
+      const response = await request(app).delete('/api/1')
+      expect(response.body.data).toEqual({})
+    })
+    test("Se retorna un mensaje de error bajo el campo 'error'", async () => {
+      const response = await request(app).delete('/api/1')
+      expect(response.body.error).not.toBe(undefined)
+      expect(typeof response.body.error).toBe('string')
+      expect(response.body.error.length > 0).toBe(true)
+    });
+  })
 })
 
