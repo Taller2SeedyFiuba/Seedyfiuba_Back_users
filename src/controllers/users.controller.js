@@ -55,12 +55,11 @@ class UsersController {
     const { id } = req.params;
     if (isNaN(id)) throw ApiError.badRequest("id must be a number")
     const deletedUser = await this.database.deleteUser(id)
-    if (deletedUser) {
-      return res.status(200).json({
-        message: 'User deleted successfully'
-      });
-    }
-    throw ApiError.notFound("User not found");
+    if (!deletedUser) throw ApiError.notFound("User not found")
+    return res.status(200).json({
+      message: 'User deleted successfully',
+      data: deletedUser
+    });
   }
 
   async updateUser(req, res) {
@@ -72,13 +71,11 @@ class UsersController {
     const { error } = this.validateUser(finalUser);
     if (error) throw ApiError.badRequest(error.message);
     const userUpdated = await this.database.updateUser(id, newData);
-    if (userUpdated) {
-      return res.status(200).json({
-        message: 'User updated successfully',
-        data: userUpdated
-      });
-    }
-    throw ApiError.notFound("User not found");
+    if (!userUpdated) throw ApiError.notFound("User not found")
+    return res.status(200).json({
+      message: 'User updated successfully',
+      data: finalUser
+    });
   }
 }
 

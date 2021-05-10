@@ -97,7 +97,7 @@ function getUsersRouter(database) {
 
   /**
    * @swagger
-   * /api/users:
+   * /api:
    *  get:
    *    description: Devuelve una lista con todos los usuarios.
    *    tags: [Usuarios]
@@ -142,7 +142,7 @@ function getUsersRouter(database) {
 
     /**
    * @swagger
-   * /api/users:
+   * /api:
    *  post:
    *    description: Crea un nuevo usuario.
    *    tags: [Usuarios]
@@ -215,7 +215,7 @@ function getUsersRouter(database) {
 
   /**
    * @swagger
-   * /api/users/{id}:
+   * /api/{id}:
    *  get:
    *    description: Devuelve al usuario segun id.
    *    tags: [Usuarios]
@@ -296,7 +296,7 @@ function getUsersRouter(database) {
 
     /**
    * @swagger
-   * /api/users/{id}:
+   * /api/{id}:
    *  delete:
    *    description: Elimina a un usuario segun id
    *    tags: [Usuarios]
@@ -377,9 +377,9 @@ function getUsersRouter(database) {
 
   /**
    * @swagger
-   * /api/users/{id}:
+   * /api/{id}:
    *  post:
-   *    description: Crea un nuevo usuario.
+   *    description: Modifica a un usuario existente.
    *    tags: [Usuarios]
    *    parameters:
    *      - in: path
@@ -444,7 +444,22 @@ function getUsersRouter(database) {
    *                  example: "firtstname field not found"
    *                data:
    *                  type: object
-   * 
+   *      '404':  
+   *        description: No se ha encontrado al usuario
+   *        content:
+   *          application/json:
+   *            schema:
+   *              type: object
+   *              requiered:
+   *                - error
+   *                - data
+   *              properties:
+   *                error: 
+   *                  type: string
+   *                  description: Mensaje de error
+   *                  example: "User not found"
+   *                data:
+   *                  type: object
    * */
 
   router.put('/:id', use(uc.updateUser.bind(uc)));

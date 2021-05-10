@@ -1,7 +1,7 @@
 const request = require('supertest');
 const { createApp } = require('../src/app');
 const { jest: requiredJest } = require('@jest/globals');
-
+const { validateUser } = require("../src/database/models/users")
 
 //Mock de validador de usuario y base de datos
 
@@ -32,10 +32,16 @@ const getAllUsers = requiredJest.fn(async function () {
   return {};
 });
 
+
 const getUserValidator = requiredJest.fn(function () {
   return userValidator;
 });
 
+/*
+const getUserValidator = () =>{
+  return validateUser;
+}
+*/
 const database = {
   createUser,
   deleteUser,
@@ -54,7 +60,8 @@ const app = createApp(database)
 
 
 describe('POST /users', () => {
-  //debugger;
+  debugger;
+  
   beforeEach(() => {
     createUser.mockReset()
     deleteUser.mockReset()
@@ -64,7 +71,7 @@ describe('POST /users', () => {
     getUserValidator.mockReset()
     userValidator.mockReset()
   })
-
+  
   describe('Recibiendo un nuevo usuario con campos completos', () => {
     const usuarioCompleto = {
       id: 1,
@@ -75,23 +82,32 @@ describe('POST /users', () => {
       signindate: '2020-09-09'
     }
     test('Se valida que los campos sean correctos', async () => {
-      const response = await request(app).post('/api/users').send(usuarioCompleto)
+
+      const response = await request(app).post('/api').send(usuarioCompleto)
       expect(userValidator.mock.calls.length).toBe(1);
       expect(userValidator.mock.calls[0][0]).toEqual(usuarioCompleto);
 
     })
-    /*
+
     test('Se valida que no exista un usuario en la base', async () => {
-      const response = await request(app).post('/api/users').send(usuarioCompleto)
+      userValidator.mockReturnValue({ value: usuarioCompleto });
+      const response = await request(app).post('/api').send(usuarioCompleto)
       //console.log(response.body)
-      userValidator.mockReturnValue({ value: {}});
       expect(getUser.mock.calls.length).toBe(1);
-      //expect(getUser.mock.calls[0][0]).toEqual(usuarioCompleto.id);
-      //expect(getUser.mock.results[0]).toBeFalsy();
+      expect(getUser.mock.calls[0][0]).toEqual(usuarioCompleto.id);
     })
-    //Se crea un usuario en la base de datos
+    
+    test('Se crea un usuario en la base de datos', async () => {
+      userValidator.mockReturnValue({ value: usuarioCompleto });
+      getUser.mockReturnValue(undefined);
+      const response = await request(app).post('/api').send(usuarioCompleto)
+      expect(createUser.mock.calls.length).toBe(1);
+      expect(createUser.mock.calls[0][0]).toEqual(usuarioCompleto);
+
+    })/*
     //Retornamos codigo 201
     test('Se retorna codigo 201', async () => {
+      getUser.mockReturnValue(undefined)
       const response = await request(app).post('/api/users').send(usuarioCompleto)
       console.log(response.error.message)
       expect(response.statusCode).toBe(200);

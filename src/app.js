@@ -44,9 +44,9 @@ function createApp(database){
     app.use(json());
 
     //Rutas
-    app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
+    app.use('/api/doc', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
     app.use('/api/general', getGeneralRouter(database));
-    app.use('/api/users', getUsersRouter(database));
+    app.use('/api', getUsersRouter(database));
 
     app.use(notDefinedHandler);
     app.use(errorHandler);
