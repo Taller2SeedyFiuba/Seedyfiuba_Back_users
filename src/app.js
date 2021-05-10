@@ -10,7 +10,7 @@ const swaggerUi = require("swagger-ui-express");
 
 //Importamos rutas/endpoints
 const { getUsersRouter } = require("./routes/users");
-const generalRoutes = require("./routes/general");
+const { getGeneralRouter } = require("./routes/general");
 
 //Importamos handlers de error
 const { notDefinedHandler, errorHandler} = require("./errors/errorHandler");
@@ -45,7 +45,7 @@ function createApp(database){
 
     //Rutas
     app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
-    app.use('/api/general', generalRoutes);
+    app.use('/api/general', getGeneralRouter(database));
     app.use('/api/users', getUsersRouter(database));
 
     app.use(notDefinedHandler);

@@ -5,8 +5,15 @@ class DataBase {
 
   constructor() {
     //Establecemos la conexion
+    console.log(process.env.DATABASE_URL)
     this.sequelize = new Sequelize(process.env.DATABASE_URL, {
-      logging: false
+      logging: console.log,
+      dialectOptions: { //MUY IMPORTANTE! No conecta sino.
+        ssl: {
+          require: true,
+          rejectUnauthorized: false
+        }
+      }
     });
 
     //Chequeamos que la conexion se haya realizado
@@ -19,7 +26,9 @@ class DataBase {
     //Creamos el modelado de usuarios
     this.users = this.sequelize.define('users', UserModel, { timestamps: false });
   }
-
+  async getStatus() {
+    return this.sequelize.authenticate();
+  }
   async createUser(user) {
     //TODO: Intentar eliminar el argumento 'fields' o al menos no hardcodearlo.
     return await this.users.create(
@@ -31,7 +40,7 @@ class DataBase {
           'email',
           'birthdate',
           'signindate']
-      });
+      }); 
   }
 
   async deleteUser(id) {
