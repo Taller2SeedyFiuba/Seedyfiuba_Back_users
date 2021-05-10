@@ -8,7 +8,7 @@ class DataBase {
     console.log("Conectando con base de datos: \n\t" + process.env.DATABASE_URL + "\n")
     const options = { logging: false }
     //Cambiar por chequeo de produccion o desarrollo
-    if (process.env.SSL){
+    if (process.NODE_ENV == 'production') {
       options['logging'] = console.log
       options['dialectOptions'] = { ssl: { require: true, rejectUnauthorized: false } }
     }
