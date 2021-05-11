@@ -5,22 +5,19 @@ class DataBase {
 
   constructor() {
     //Establecemos la conexion
-    console.log(process.env.DATABASE_URL)
-    this.sequelize = new Sequelize(process.env.DATABASE_URL, {
-      logging: console.log,
-      dialectOptions: { //MUY IMPORTANTE! No conecta sino.
-        ssl: {
-          require: true,
-          rejectUnauthorized: false
-        }
-      }
-    });
-
+    console.log("Conectando con base de datos: \n\t" + process.env.DATABASE_URL + "\n")
+    const options = { logging: false }
+    //Cambiar por chequeo de produccion o desarrollo
+    if (process.NODE_ENV == 'production') {
+      options['logging'] = console.log
+      options['dialectOptions'] = { ssl: { require: true, rejectUnauthorized: false } }
+    }
+    this.sequelize = new Sequelize(process.env.DATABASE_URL, options);
     //Chequeamos que la conexion se haya realizado
     this.sequelize.authenticate().then(() => {
       console.log('La conexion con la base de datos se ha realizado satisfactoriamente.');
     }).catch(error => {
-      throw Error('Ha fallado la conexion con la base de datos: \n' + error.message);
+      console.error('Ha fallado la conexion con la base de datos: \n' + error.message);
     });
 
     //Creamos el modelado de usuarios
@@ -30,17 +27,7 @@ class DataBase {
     return this.sequelize.authenticate();
   }
   async createUser(user) {
-    //TODO: Intentar eliminar el argumento 'fields' o al menos no hardcodearlo.
-    return await this.users.create(
-      user,
-      {
-        fields: ['id',
-          'firstname',
-          'lastname',
-          'email',
-          'birthdate',
-          'signindate']
-      }); 
+      return await this.users.create(user);
   }
 
   async deleteUser(id) {
