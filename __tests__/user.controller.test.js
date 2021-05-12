@@ -1,6 +1,7 @@
 const request = require('supertest');
 const { createApp } = require('../src/app');
 const { jest: requiredJest } = require('@jest/globals');
+const { validateUser } = require('../src/database/models/users')
 
 //Mock de validador de usuario y base de datos
 
@@ -46,7 +47,7 @@ const database = {
 
 
 
-const app = createApp(database)
+const app = createApp(database, log=false)
 
 
 
