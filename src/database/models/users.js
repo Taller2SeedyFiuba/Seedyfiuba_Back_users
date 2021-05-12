@@ -36,6 +36,7 @@ function validateUser(user) {
       .max(30)
       .required()
       .messages({
+        //Ejemplo de mensajes personalizados, discutir si se implementan o no
         'string.base': `Tu nombre solo puede contener texto`,
         'string.empty': `No podes tener un nombre vacio`,
         'string.min': `Tu nombre debe tener una longitud minima de {#limit}`,
@@ -49,13 +50,13 @@ function validateUser(user) {
     email: Joi.string()
       .email()
       .min(5)
-      .max(50)
+      .max(30)
       .required(),
     birthdate: Joi.date()
       .required(),
     signindate: Joi.date()
       .required()
-  }).options({ abortEarly: false });//abortEarly: true, lanza excepcion apenas se detecta error
+  }).options({ abortEarly: false });
 
   return JoiSchema.validate(user);
 }
