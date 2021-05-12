@@ -8,10 +8,11 @@ class DataBase {
     console.log("Conectando con base de datos: \n\t" + process.env.DATABASE_URL + "\n")
     const options = { logging: false }
     //Cambiar por chequeo de produccion o desarrollo
-    if (process.NODE_ENV == 'production') {
+    if (process.env.NODE_ENV == 'production') {
       options['logging'] = console.log
       options['dialectOptions'] = { ssl: { require: true, rejectUnauthorized: false } }
     }
+
     this.sequelize = new Sequelize(process.env.DATABASE_URL, options);
     //Chequeamos que la conexion se haya realizado
     this.sequelize.authenticate().then(() => {
