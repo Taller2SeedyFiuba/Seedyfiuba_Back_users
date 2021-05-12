@@ -34,13 +34,13 @@ const swaggerOptions = {
   
 const swaggerDocs = swaggerJsDoc(swaggerOptions);
 
-function createApp(database){
+function createApp(database, log=true){
 
     //Iniciamos la aplicacion
     const app = express();
     
     //Middlewares
-    app.use(morgan('dev')); //Escupir a archivo con una ip y timestamp.
+    if(log) app.use(morgan('dev')); //Escupir a archivo con una ip y timestamp.
     app.use(json());
 
     //Rutas
