@@ -56,8 +56,7 @@ describe('Pruebas sobre una base de datos vacia', () => {
     firstname: 'Marcelo',
     lastname: 'Lopez',
     email: 'mlopez@fi.uba.ar',
-    birthdate: '1900-08-08',
-    signindate: '2020-09-09'
+    birthdate: '1900-08-08'
   }
   db = {};
   const initialDb = db;
@@ -147,24 +146,21 @@ describe('Pruebas de registro, y consulta encadenadas', () => {
     firstname: 'Marcelo',
     lastname: 'Lopez',
     email: 'mlopez@fi.uba.ar',
-    birthdate: '1900-08-08',
-    signindate: '2020-09-09'
+    birthdate: '1900-08-08'
   },
   {
     id: 'userid2',
     firstname: 'Leopoldo',
     lastname: 'Gomez',
     email: 'lgomez@fi.uba.ar',
-    birthdate: '1900-08-08',
-    signindate: '2020-09-09'
+    birthdate: '1900-08-08'
   },
   {
     id: 'userid3',
     firstname: 'Camila',
     lastname: 'Bravio',
     email: 'cbravio@fi.uba.ar',
-    birthdate: '1900-08-08',
-    signindate: '2020-09-09'
+    birthdate: '1900-08-08'
   }]
 
   const newUsers = [{
@@ -172,24 +168,21 @@ describe('Pruebas de registro, y consulta encadenadas', () => {
     firstname: 'Cristian',
     lastname: 'Castro',
     email: 'cc@cristian.castro.com',
-    birthdate: '1900-08-08',
-    signindate: '2020-09-09'
+    birthdate: '1900-08-08'
   },
   {
     id: 'userid2',
     firstname: 'Gustavo',
     lastname: 'Mirador',
     email: 'gmirador@gmail.com',
-    birthdate: '1900-08-08',
-    signindate: '2020-09-09'
+    birthdate: '1900-08-08'
   },
   {
     id: 'userid3',
     firstname: 'Elon',
     lastname: 'Musk',
     email: 'muskelon@tesla.com',
-    birthdate: '1900-08-08',
-    signindate: '2020-09-09'
+    birthdate: '1900-08-08'
   }]
 
   db = {};

@@ -42,7 +42,7 @@ function getUsersRouter(database) {
    *          description: Fecha de nacimiento del usuario
    *        signindate:
    *          type: string
-   *          format: date
+   *          format: date-time
    *          description: Fecha de inscripcion en el sistema del usuario
    *      example:
    *        id: "uhasj31asidasdicaw"
@@ -50,15 +50,46 @@ function getUsersRouter(database) {
    *        lastname: "Lopez"
    *        email: "mlopez@gmail.com"
    *        birthdate: "1990-03-04"
-   *        signindate: "2020-11-10"
-   *    User: 
+   *        signindate: "2020-11-10T16:49:52.214Z"
+   *    SendUser: 
+   *      type: object
+   *      requiered:
+   *        - id
+   *        - firstname
+   *        - lastname
+   *        - email
+   *        - birthdate
+   *      properties:
+   *        id:
+   *          type: string
+   *          description: Identificador del usuario autorizado
+   *        firstname:
+   *          type: string
+   *          description: Nombre del usuario
+   *        lastname:
+   *          type: string
+   *          description: Apellido del usuario
+   *        email:
+   *          type: string
+   *          description: Direccion de e-mail del usuario
+   *        birthdate:
+   *          type: string
+   *          format: date
+   *          description: Fecha de nacimiento del usuario
+   *      example:
+   *        id: "uhasj31asidasdicaw"
+   *        firstname: "Marcelo"
+   *        lastname: "Lopez"
+   *        email: "mlopez@gmail.com"
+   *        birthdate: "1990-03-04"
+   * 
+   *    UpdateUser: 
    *      type: object
    *      requiered:
    *        - firstname
    *        - lastname
    *        - email
    *        - birthdate
-   *        - signindate
    *      properties:
    *        firstname:
    *          type: string
@@ -73,16 +104,11 @@ function getUsersRouter(database) {
    *          type: string
    *          format: date
    *          description: Fecha de nacimiento del usuario
-   *        signindate:
-   *          type: string
-   *          format: date
-   *          description: Fecha de inscripcion en el sistema del usuario
    *      example:
    *        firstname: "Marcelo"
    *        lastname: "Lopez"
    *        email: "mlopez@gmail.com"
    *        birthdate: "1990-03-04"
-   *        signindate: "2020-11-10"
    * */
 
   //const __createUser = use(uc.createUser.bind(uc))  TODO: ver si podemos simplificar notacion con una anonima
@@ -149,7 +175,7 @@ function getUsersRouter(database) {
    *      - in: body
    *        name: user
    *        schema:
-   *            $ref: '#components/schemas/FullUser'
+   *            $ref: '#components/schemas/SendUser'
    *        required: true
    *        description: Datos del usuario a cargar
    *    responses:
@@ -358,7 +384,7 @@ function getUsersRouter(database) {
    *      - in: body
    *        name: user
    *        schema:
-   *            $ref: '#components/schemas/User'
+   *            $ref: '#components/schemas/UpdateUser'
    *        required: true
    *        description: Nuevos datos del usuario, todos son requeridos.
    *    responses:

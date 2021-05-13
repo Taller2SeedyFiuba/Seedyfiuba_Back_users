@@ -74,6 +74,13 @@ class UsersController {
     if (!userToUpdate) throw ApiError.notFound("User not found")
     const userUpdated = await this.database.updateUser(id, newData)
     if (!userUpdated) throw ApiError.serverError("Server error")
+    //Me evito un query a la base haciendo esto
+    for (const [key, value] of Object.entries(userToUpdate)){
+      if (!finalUser[key]){
+        finalUser[key] = value;
+      }
+    }
+    
     return res.status(200).json({
       message: 'User updated successfully',
       data: finalUser

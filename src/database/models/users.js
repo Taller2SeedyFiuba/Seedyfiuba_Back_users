@@ -20,7 +20,8 @@ const UserModel = {
   },
   birthdate: {
     type: Sequelize.DATE
-  },
+  }
+  ,
   signindate: {
     type: Sequelize.DATE
   },
@@ -56,8 +57,8 @@ function validateUser(user) {
       .required(),
     birthdate: Joi.date()
       .required(),
-    signindate: Joi.date()
-      .required()
+    //signindate: Joi.date()
+    //  .required()
   }).options({ abortEarly: false });
 
   return JoiSchema.validate(user);
