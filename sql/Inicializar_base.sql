@@ -3,7 +3,7 @@
 DROP TABLE IF EXISTS users;
 
 CREATE TABLE users(
-	id INTEGER,
+	id VARCHAR(255) NOT NULL CHECK (id <> ''),
 	firstname VARCHAR(30) NOT NULL CHECK (firstname <> ''),
 	lastname VARCHAR(30) NOT NULL CHECK (lastname <> ''),
 	email VARCHAR(30) NOT NULL CHECK (email <> ''),

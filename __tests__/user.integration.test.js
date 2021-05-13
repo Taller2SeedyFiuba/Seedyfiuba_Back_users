@@ -52,7 +52,7 @@ const app = createApp(database, log=false)
 describe('Pruebas sobre una base de datos vacia', () => {
 
   const user1 = {
-    id: 1,
+    id: 'userid',
     firstname: 'Marcelo',
     lastname: 'Lopez',
     email: 'mlopez@fi.uba.ar',
@@ -100,12 +100,12 @@ describe('Pruebas sobre una base de datos vacia', () => {
 
   describe('PUT /api{id}', () => {  
     test('La base de datos no se ve modificada', async () => {  
-      const response = await request(app).post('/api/1').send(user1)
+      const response = await request(app).post('/api/'+user1.id).send(user1)
       expect(db).toEqual(initialDb);
     })
     
     test('Se retorna codigo 404, error y campo vacio', async () => {
-      const response = await request(app).post('/api/1').send(user1)
+      const response = await request(app).post('/api/'+user1.id).send(user1)
       expect(response.statusCode).toBe(404);
       expect(typeof response.body.error).toBe('string')
       expect(response.body.error.length > 0).toBe(true)
@@ -115,7 +115,7 @@ describe('Pruebas sobre una base de datos vacia', () => {
   describe('GET /api{id}', () => {  
 
     test('Se retorna codigo 404, error y campo vacio', async () => {
-      const response = await request(app).get('/api/1')
+      const response = await request(app).get('/api/'+user1.id)
       expect(response.statusCode).toBe(404);
       expect(typeof response.body.error).toBe('string')
       expect(response.body.error.length > 0).toBe(true)
@@ -125,12 +125,12 @@ describe('Pruebas sobre una base de datos vacia', () => {
   describe('DELETE /api{id}', () => {
 
     test('La base de datos no se ve modificada', async () => {  
-      const response = await request(app).delete('/api/1')
+      const response = await request(app).delete('/api/'+user1.id)
       expect(db).toEqual(initialDb);
     })
 
     test('Se retorna codigo 404, error y campo vacio', async () => {
-      const response = await request(app).delete('/api/1')
+      const response = await request(app).delete('/api/'+user1.id)
       expect(response.statusCode).toBe(404);
       expect(typeof response.body.error).toBe('string')
       expect(response.body.error.length > 0).toBe(true)
@@ -143,7 +143,7 @@ describe('Pruebas sobre una base de datos vacia', () => {
 describe('Pruebas de registro, y consulta encadenadas', () => {
 
   const users = [{
-    id: 1,
+    id: 'userid1',
     firstname: 'Marcelo',
     lastname: 'Lopez',
     email: 'mlopez@fi.uba.ar',
@@ -151,7 +151,7 @@ describe('Pruebas de registro, y consulta encadenadas', () => {
     signindate: '2020-09-09'
   },
   {
-    id: 2,
+    id: 'userid2',
     firstname: 'Leopoldo',
     lastname: 'Gomez',
     email: 'lgomez@fi.uba.ar',
@@ -159,7 +159,7 @@ describe('Pruebas de registro, y consulta encadenadas', () => {
     signindate: '2020-09-09'
   },
   {
-    id: 3,
+    id: 'userid3',
     firstname: 'Camila',
     lastname: 'Bravio',
     email: 'cbravio@fi.uba.ar',
@@ -168,7 +168,7 @@ describe('Pruebas de registro, y consulta encadenadas', () => {
   }]
 
   const newUsers = [{
-    id: 1,
+    id: 'userid1',
     firstname: 'Cristian',
     lastname: 'Castro',
     email: 'cc@cristian.castro.com',
@@ -176,7 +176,7 @@ describe('Pruebas de registro, y consulta encadenadas', () => {
     signindate: '2020-09-09'
   },
   {
-    id: 2,
+    id: 'userid2',
     firstname: 'Gustavo',
     lastname: 'Mirador',
     email: 'gmirador@gmail.com',
@@ -184,7 +184,7 @@ describe('Pruebas de registro, y consulta encadenadas', () => {
     signindate: '2020-09-09'
   },
   {
-    id: 3,
+    id: 'userid3',
     firstname: 'Elon',
     lastname: 'Musk',
     email: 'muskelon@tesla.com',
@@ -249,8 +249,8 @@ describe('Pruebas de registro, y consulta encadenadas', () => {
         expect(response.body.data).toEqual(user);
       }
     })
-    test('Se elimina al usuario de id 1', async () => {
-      const response = await request(app).delete('/api/1')
+    test('Se elimina al usuario de id userid1', async () => {
+      const response = await request(app).delete('/api/userid1')
       expect(response.statusCode).toBe(200);
       expect(typeof response.body.message).toBe('string')
       expect(response.body.message.length > 0).toBe(true)

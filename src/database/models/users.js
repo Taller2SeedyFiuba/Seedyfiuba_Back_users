@@ -4,7 +4,7 @@ const Joi = require("joi");
 
 const UserModel = {
   id: {
-    type: Sequelize.INTEGER,
+    type: Sequelize.CHAR(255),
     primaryKey: true,
 
   },
@@ -30,7 +30,9 @@ function validateUser(user) {
 
   const JoiSchema = Joi.object({
 
-    id: Joi.number().required(),
+    id: Joi.string()
+      .max(255)
+      .required(),
     firstname: Joi.string()
       .min(1)
       .max(30)
