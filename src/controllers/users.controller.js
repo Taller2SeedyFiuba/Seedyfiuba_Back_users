@@ -33,7 +33,8 @@ class UsersController {
 
   async getOneUser(req, res) {
     const { id } = req.params;
-    const user = await this.database.getUser(id)
+    const user = await this.database.getUser(id);
+
     if (user) return res.status(200).json({
       message: "User information retrieved",
       data: user,
