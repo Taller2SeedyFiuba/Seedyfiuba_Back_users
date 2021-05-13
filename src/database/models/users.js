@@ -29,7 +29,6 @@ const UserModel = {
 function validateUser(user) {
 
   const JoiSchema = Joi.object({
-
     id: Joi.string()
       .max(255)
       .required(),
