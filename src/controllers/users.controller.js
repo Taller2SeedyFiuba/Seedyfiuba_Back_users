@@ -32,9 +32,7 @@ class UsersController {
   }
 
   async getOneUser(req, res) {
-    const { id: _id } = req.params;
-    if (isNaN(_id)) throw ApiError.badRequest("id must be a number")
-    const id = parseInt(_id, 10);
+    const { id } = req.params;
     const user = await this.database.getUser(id)
     if (user) return res.status(200).json({
       message: "User information retrieved",
@@ -44,9 +42,7 @@ class UsersController {
   }
 
   async userExists(req, res) {
-    const { id: _id } = req.params;
-    if (isNaN(_id)) throw ApiError.badRequest("id must be a number")
-    const id = parseInt(_id, 10);
+    const { id } = req.params;
     const user = await this.database.getUser(id)
     if (user) return res.status(200).json({ response: true });
     return res.status(200).json({ response: false });
@@ -54,9 +50,7 @@ class UsersController {
 
   async deleteUser(req, res) {
 
-    const { id: _id } = req.params;
-    if (isNaN(_id)) throw ApiError.badRequest("id must be a number")
-    const id = parseInt(_id, 10);
+    const { id } = req.params;
     const userToDelete = await this.database.getUser(id)
     if (!userToDelete) throw ApiError.notFound("User not found")
     const userDeleted = await this.database.deleteUser(id)
@@ -68,9 +62,7 @@ class UsersController {
   }
 
   async updateUser(req, res) {
-    const { id: _id } = req.params;
-    if (isNaN(_id)) throw ApiError.badRequest("id must be a number")
-    const id = parseInt(_id, 10);
+    const { id } = req.params;
     const newData = req.body;
     const finalUser = newData
     finalUser['id'] = id;

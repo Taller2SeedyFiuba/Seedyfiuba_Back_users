@@ -25,8 +25,7 @@ function getUsersRouter(database) {
    *        - signindate
    *      properties:
    *        id:
-   *          type: integer
-   *          format: int32
+   *          type: string
    *          description: Identificador del usuario autorizado
    *        firstname:
    *          type: string
@@ -46,7 +45,7 @@ function getUsersRouter(database) {
    *          format: date
    *          description: Fecha de inscripcion en el sistema del usuario
    *      example:
-   *        id: 23
+   *        id: "uhasj31asidasdicaw"
    *        firstname: "Marcelo"
    *        lastname: "Lopez"
    *        email: "mlopez@gmail.com"
@@ -223,7 +222,7 @@ function getUsersRouter(database) {
    *      - in: path
    *        name: id
    *        schema:
-   *          type: integer
+   *          type: string
    *        required: true
    *        description: Identificador del usuario a obtener
    *    responses:
@@ -259,22 +258,6 @@ function getUsersRouter(database) {
    *                  example: "Server error"
    *                data:
    *                  type: object
-   *      '400':  
-   *        description: Error en solicitud del cliente
-   *        content:
-   *          application/json:
-   *            schema:
-   *              type: object
-   *              requiered:
-   *                - error
-   *                - data
-   *              properties:
-   *                error: 
-   *                  type: string
-   *                  description: Mensaje de error
-   *                  example: "ID must be an integer"
-   *                data:
-   *                  type: object
    *      '404':  
    *        description: No se ha encontrado al usuario
    *        content:
@@ -304,7 +287,7 @@ function getUsersRouter(database) {
    *      - in: path
    *        name: id
    *        schema:
-   *          type: integer
+   *          type: string
    *        required: true
    *        description: Identificador del usuario a eliminar
    *    responses:
@@ -340,22 +323,6 @@ function getUsersRouter(database) {
    *                  example: "Server error"
    *                data:
    *                  type: object
-   *      '400':  
-   *        description: Error en solicitud del cliente
-   *        content:
-   *          application/json:
-   *            schema:
-   *              type: object
-   *              requiered:
-   *                - error
-   *                - data
-   *              properties:
-   *                error: 
-   *                  type: string
-   *                  description: Mensaje de error
-   *                  example: "ID must be an integer"
-   *                data:
-   *                  type: object
    *      '404':  
    *        description: No se ha encontrado al usuario
    *        content:
@@ -385,7 +352,7 @@ function getUsersRouter(database) {
    *      - in: path
    *        name: id
    *        schema:
-   *          type: integer
+   *          type: string
    *        required: true
    *        description: Identificador del usuario a modificar
    *      - in: body
@@ -442,22 +409,6 @@ function getUsersRouter(database) {
    *                  type: string
    *                  description: Mensaje de error
    *                  example: "firtstname field not found"
-   *                data:
-   *                  type: object
-   *      '404':  
-   *        description: No se ha encontrado al usuario
-   *        content:
-   *          application/json:
-   *            schema:
-   *              type: object
-   *              requiered:
-   *                - error
-   *                - data
-   *              properties:
-   *                error: 
-   *                  type: string
-   *                  description: Mensaje de error
-   *                  example: "User not found"
    *                data:
    *                  type: object
    * */
