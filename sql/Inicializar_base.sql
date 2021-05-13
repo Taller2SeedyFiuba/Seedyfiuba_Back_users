@@ -8,7 +8,7 @@ CREATE TABLE users(
 	lastname VARCHAR(30) NOT NULL CHECK (lastname <> ''),
 	email VARCHAR(30) NOT NULL CHECK (email <> ''),
 	birthdate date NOT NULL,
-	signindate date NOT NULL
+	signindate TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 ALTER TABLE users ADD CONSTRAINT pk_users PRIMARY KEY(id);

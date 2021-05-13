@@ -36,11 +36,15 @@ class DataBase {
   }
 
   async updateUser(id, newData) {
-    return await this.users.update(newData, { where: { id } });
+    const response = await this.users.update(newData, { where: { id } });
+    if (!response) return 0;
+    return response[0];
   }
 
   async getUser(id) {
-    return await this.users.findByPk(id);
+    const response = await this.users.findByPk(id);
+    if (!response) return undefined;
+    return response.dataValues;
   }
 
   async getAllUsers() {
