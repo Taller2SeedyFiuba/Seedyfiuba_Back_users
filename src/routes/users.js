@@ -371,7 +371,7 @@ function getUsersRouter(database) {
   /**
    * @swagger
    * /api/{id}:
-   *  post:
+   *  put:
    *    description: Modifica a un usuario existente.
    *    tags: [Usuarios]
    *    parameters:
