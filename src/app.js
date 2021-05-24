@@ -1,6 +1,7 @@
 const express = require('express');
 const json = require('express').json;
 const morgan = require('morgan');
+const cors = require('cors');
 
 //Documentacion de swagger
 const swaggerJsDoc = require("swagger-jsdoc");
@@ -41,8 +42,9 @@ function createApp(database, log=true){
     
     //Middlewares
     if(log) app.use(morgan('dev')); //Escupir a archivo con una ip y timestamp.
+    app.use(cors());
     app.use(json());
-
+    
     //Rutas
     app.use('/api/doc', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
     app.use('/api/general', getGeneralRouter(database));
