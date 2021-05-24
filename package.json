@@ -1,12 +1,12 @@
 {
   "name": "back_users",
   "version": "1.0.0",
-  "description": "Servicio de backend SeedyFiuba",
+  "description": "Microservicio de usuarios backend SeedyFiuba",
   "main": "index.js",
   "scripts": {
     "dev": "nodemon --inspect=0.0.0.0:8000 src/index.js",
     "start": "node src/index.js",
-    "test": "jest"
+    "test": "jest --collectCoverage"
   },
   "repository": {
     "type": "git",
