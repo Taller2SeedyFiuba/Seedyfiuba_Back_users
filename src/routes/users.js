@@ -1,20 +1,14 @@
 const router = require("express").Router();
-const { validateUser } = require("../database/models/users")
-const { UsersController } = require("../controllers/users.controller");
+const uc = require("../controllers/users.controller");
+const { hocError } = require('../errors/handler');
 
-function getUsersRouter(database) {
+function getUsersRouter() {
 
-  const uc = new UsersController(database, validateUser);
-
-  //Permite atrapar errores sin necesidad de try catch
-  const use = fn => (req, res, next) =>
-    Promise.resolve(fn(req, res, next)).catch(next);
-
-  /**
+/**
    * @swagger
    * components:
-   *  schemas: 
-   *    FullUser: 
+   *  schemas:
+   *    FullUser:
    *      type: object
    *      requiered:
    *        - id
@@ -51,7 +45,7 @@ function getUsersRouter(database) {
    *        email: "mlopez@gmail.com"
    *        birthdate: "1990-03-04"
    *        signindate: "2020-11-10T16:49:52.214Z"
-   *    SendUser: 
+   *    SendUser:
    *      type: object
    *      requiered:
    *        - id
@@ -82,8 +76,8 @@ function getUsersRouter(database) {
    *        lastname: "Lopez"
    *        email: "mlopez@gmail.com"
    *        birthdate: "1990-03-04"
-   * 
-   *    UpdateUser: 
+   *
+   *    UpdateUser:
    *      type: object
    *      requiered:
    *        - firstname
@@ -109,10 +103,11 @@ function getUsersRouter(database) {
    *        lastname: "Lopez"
    *        email: "mlopez@gmail.com"
    *        birthdate: "1990-03-04"
-   * */
+   *
+    * */
 
-  //const __createUser = use(uc.createUser.bind(uc))  TODO: ver si podemos simplificar notacion con una anonima
-  
+  //const __createUser = use(uc.createUser)  TODO: ver si podemos simplificar notacion con una anonima
+
 /**
  * @swagger
  * tags:
@@ -134,36 +129,37 @@ function getUsersRouter(database) {
    *            schema:
    *              type: object
    *              requiered:
-   *                - message
+   *                - status
    *                - data
    *              properties:
-   *                message: 
+   *                status:
    *                  type: string
-   *                  description: Mensaje de exito
-   *                  example: "All user information retrieved"
+   *                  description: Estado de la petición
+   *                  example: "success"
    *                data:
    *                  type: array
    *                  items:
    *                    $ref: '#components/schemas/FullUser'
-   *      '500':  
+   *      '500':
    *        description: Error interno del servidor
    *        content:
    *          application/json:
    *            schema:
    *              type: object
    *              requiered:
-   *                - error
-   *                - data
+   *                - status
+   *                - message
    *              properties:
-   *                error: 
+   *                status:
    *                  type: string
-   *                  description: Mensaje de error
-   *                  example: "Server error"
-   *                data:
+   *                  description: Estado de la petición
+   *                  example: "error"
+   *                message:
    *                  type: object
-   * 
+   *                  description: Mensaje de error
+   *
    * */
-  router.get('/', use(uc.getUsers.bind(uc)));
+  router.get('/', hocError(uc.getUsers));
 
     /**
    * @swagger
@@ -186,17 +182,17 @@ function getUsersRouter(database) {
    *            schema:
    *              type: object
    *              requiered:
-   *                - message
+   *                - status
    *                - data
    *              properties:
-   *                message: 
+   *                status:
    *                  type: string
-   *                  description: Mensaje de exito
-   *                  example: "User created successfully"
+   *                  description: Estado de la petición
+   *                  example: "success"
    *                data:
    *                  $ref: '#components/schemas/FullUser'
-   *                    
-   *      '500':  
+   *
+   *      '500':
    *        description: Error interno del servidor
    *        content:
    *          application/json:
@@ -206,13 +202,13 @@ function getUsersRouter(database) {
    *                - error
    *                - data
    *              properties:
-   *                error: 
+   *                error:
    *                  type: string
    *                  description: Mensaje de error
    *                  example: "Server error"
    *                data:
    *                  type: object
-   *      '400':  
+   *      '400':
    *        description: Error en solicitud del cliente
    *        content:
    *          application/json:
@@ -222,20 +218,20 @@ function getUsersRouter(database) {
    *                - error
    *                - data
    *              properties:
-   *                error: 
+   *                error:
    *                  type: string
    *                  description: Mensaje de error
    *                  example: "ID already in use"
    *                data:
    *                  type: object
-   * 
+   *
    * */
-  router.post('/', use(uc.createUser.bind(uc)));
-  
+  router.post('/', hocError(uc.createUser));
+
 
   // /api/users/:userID
 
-  router.get('/exists/:id', use(uc.userExists.bind(uc)));
+  router.get('/exists/:id', hocError(uc.userExists));
 
 
   /**
@@ -262,13 +258,13 @@ function getUsersRouter(database) {
    *                - message
    *                - data
    *              properties:
-   *                message: 
+   *                message:
    *                  type: string
    *                  description: Mensaje de exito
    *                  example: "User information retrieved"
    *                data:
    *                    $ref: '#components/schemas/FullUser'
-   *      '500':  
+   *      '500':
    *        description: Error interno del servidor
    *        content:
    *          application/json:
@@ -278,13 +274,13 @@ function getUsersRouter(database) {
    *                - error
    *                - data
    *              properties:
-   *                error: 
+   *                error:
    *                  type: string
    *                  description: Mensaje de error
    *                  example: "Server error"
    *                data:
    *                  type: object
-   *      '404':  
+   *      '404':
    *        description: No se ha encontrado al usuario
    *        content:
    *          application/json:
@@ -294,14 +290,14 @@ function getUsersRouter(database) {
    *                - error
    *                - data
    *              properties:
-   *                error: 
+   *                error:
    *                  type: string
    *                  description: Mensaje de error
    *                  example: "User not found"
    *                data:
    *                  type: object
    * */
-  router.get('/:id', use(uc.getOneUser.bind(uc)));
+  router.get('/:id', hocError(uc.getOneUser));
 
     /**
    * @swagger
@@ -327,13 +323,13 @@ function getUsersRouter(database) {
    *                - message
    *                - data
    *              properties:
-   *                message: 
+   *                message:
    *                  type: string
    *                  description: Mensaje de exito
    *                  example: "User deleted"
    *                data:
    *                    $ref: '#components/schemas/FullUser'
-   *      '500':  
+   *      '500':
    *        description: Error interno del servidor
    *        content:
    *          application/json:
@@ -343,13 +339,13 @@ function getUsersRouter(database) {
    *                - error
    *                - data
    *              properties:
-   *                error: 
+   *                error:
    *                  type: string
    *                  description: Mensaje de error
    *                  example: "Server error"
    *                data:
    *                  type: object
-   *      '404':  
+   *      '404':
    *        description: No se ha encontrado al usuario
    *        content:
    *          application/json:
@@ -359,14 +355,14 @@ function getUsersRouter(database) {
    *                - error
    *                - data
    *              properties:
-   *                error: 
+   *                error:
    *                  type: string
    *                  description: Mensaje de error
    *                  example: "User not found"
    *                data:
    *                  type: object
    * */
-  router.delete('/:id', use(uc.deleteUser.bind(uc)));
+  router.delete('/:id', hocError(uc.deleteUser));
 
   /**
    * @swagger
@@ -398,14 +394,14 @@ function getUsersRouter(database) {
    *                - message
    *                - data
    *              properties:
-   *                message: 
+   *                message:
    *                  type: string
    *                  description: Mensaje de exito
    *                  example: "User updated successfully"
    *                data:
    *                  $ref: '#components/schemas/FullUser'
-   *                    
-   *      '500':  
+   *
+   *      '500':
    *        description: Error interno del servidor
    *        content:
    *          application/json:
@@ -415,13 +411,13 @@ function getUsersRouter(database) {
    *                - error
    *                - data
    *              properties:
-   *                error: 
+   *                error:
    *                  type: string
    *                  description: Mensaje de error
    *                  example: "Server error"
    *                data:
    *                  type: object
-   *      '400':  
+   *      '400':
    *        description: Error en solicitud del cliente
    *        content:
    *          application/json:
@@ -431,7 +427,7 @@ function getUsersRouter(database) {
    *                - error
    *                - data
    *              properties:
-   *                error: 
+   *                error:
    *                  type: string
    *                  description: Mensaje de error
    *                  example: "firtstname field not found"
@@ -439,7 +435,7 @@ function getUsersRouter(database) {
    *                  type: object
    * */
 
-  router.put('/:id', use(uc.updateUser.bind(uc)));
+  router.put('/:id', hocError(uc.updateUser));
 
   return router;
 }

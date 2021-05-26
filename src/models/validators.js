@@ -1,34 +1,6 @@
-const Sequelize = require("sequelize");
 const Joi = require("joi");
 
-
-const UserModel = {
-  id: {
-    type: Sequelize.CHAR(255),
-    primaryKey: true,
-
-  },
-  firstname: {
-    type: Sequelize.CHAR(30),
-    allowNull: false
-  },
-  lastname: {
-    type: Sequelize.CHAR(30)
-  },
-  email: {
-    type: Sequelize.CHAR(30)
-  },
-  birthdate: {
-    type: Sequelize.DATE
-  }
-  ,
-  signindate: {
-    type: Sequelize.DATE
-  },
-}
-
 function validateUser(user) {
-
   const JoiSchema = Joi.object({
     id: Joi.string()
       .max(255)
@@ -63,7 +35,4 @@ function validateUser(user) {
   return JoiSchema.validate(user);
 }
 
-module.exports = {
-  UserModel,
-  validateUser
-}
+module.exports = { validateUser };

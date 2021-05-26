@@ -1,19 +1,21 @@
 const express = require('express');
 const json = require('express').json;
 const morgan = require('morgan');
+const cors = require('cors');
 
 //Documentacion de swagger
 const swaggerJsDoc = require("swagger-jsdoc");
 const swaggerUi = require("swagger-ui-express");
 
-
-
 //Importamos rutas/endpoints
 const { getUsersRouter } = require("./routes/users");
-const { getGeneralRouter } = require("./routes/general");
+
+const {
+  getAPIStatus
+} = require("./controllers/status");
 
 //Importamos handlers de error
-const { notDefinedHandler, errorHandler} = require("./errors/errorHandler");
+const { notDefinedHandler, errorHandler, hocError} = require("./errors/handler");
 
 const swaggerOptions = {
     swaggerDefinition: {
@@ -31,22 +33,23 @@ const swaggerOptions = {
     },
     apis: ['src/routes/users.js']
 };
-  
+
 const swaggerDocs = swaggerJsDoc(swaggerOptions);
 
 function createApp(database, log=true){
 
     //Iniciamos la aplicacion
     const app = express();
-    
+
     //Middlewares
     if(log) app.use(morgan('dev')); //Escupir a archivo con una ip y timestamp.
+    app.use(cors());
     app.use(json());
 
     //Rutas
     app.use('/api/doc', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
-    app.use('/api/general', getGeneralRouter(database));
-    app.use('/api', getUsersRouter(database));
+    app.use('/api/status', hocError(getAPIStatus));
+    app.use('/api/users', getUsersRouter());
 
     app.use(notDefinedHandler);
     app.use(errorHandler);
