@@ -15,7 +15,7 @@ const {
 } = require("./controllers/status");
 
 //Importamos handlers de error
-const { notDefinedHandler, errorHandler} = require("./errors/errorHandler");
+const { notDefinedHandler, errorHandler, hocError} = require("./errors/handler");
 
 const swaggerOptions = {
     swaggerDefinition: {
@@ -48,7 +48,7 @@ function createApp(database, log=true){
 
     //Rutas
     app.use('/api/doc', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
-    app.use('/api/status', getAPIStatus);
+    app.use('/api/status', hocError(getAPIStatus));
     app.use('/api/users', getUsersRouter());
 
     app.use(notDefinedHandler);

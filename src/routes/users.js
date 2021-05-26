@@ -1,16 +1,8 @@
 const router = require("express").Router();
-// const { validateUser } = require("../database/models/users")
 const uc = require("../controllers/users.controller");
-const database = require("../database");
+const { hocError } = require('../errors/handler');
 
 function getUsersRouter() {
-  const binded = {
-    database
-  }
-
-  //Permite atrapar errores sin necesidad de try catch
-  const use = fn => (req, res, next) =>
-    Promise.resolve(fn(req, res, next)).catch(next);
 
 /**
    * @swagger
@@ -114,7 +106,7 @@ function getUsersRouter() {
    *
     * */
 
-  //const __createUser = use(uc.createUser.bind(binded))  TODO: ver si podemos simplificar notacion con una anonima
+  //const __createUser = use(uc.createUser)  TODO: ver si podemos simplificar notacion con una anonima
 
 /**
  * @swagger
@@ -167,7 +159,7 @@ function getUsersRouter() {
    *                  description: Mensaje de error
    *
    * */
-  router.get('/', use(uc.getUsers));
+  router.get('/', hocError(uc.getUsers));
 
     /**
    * @swagger
@@ -234,12 +226,12 @@ function getUsersRouter() {
    *                  type: object
    *
    * */
-  router.post('/', use(uc.createUser.bind(binded)));
+  router.post('/', hocError(uc.createUser));
 
 
   // /api/users/:userID
 
-  router.get('/exists/:id', use(uc.userExists.bind(binded)));
+  router.get('/exists/:id', hocError(uc.userExists));
 
 
   /**
@@ -305,7 +297,7 @@ function getUsersRouter() {
    *                data:
    *                  type: object
    * */
-  router.get('/:id', use(uc.getOneUser));
+  router.get('/:id', hocError(uc.getOneUser));
 
     /**
    * @swagger
@@ -370,7 +362,7 @@ function getUsersRouter() {
    *                data:
    *                  type: object
    * */
-  router.delete('/:id', use(uc.deleteUser.bind(binded)));
+  router.delete('/:id', hocError(uc.deleteUser));
 
   /**
    * @swagger
@@ -443,7 +435,7 @@ function getUsersRouter() {
    *                  type: object
    * */
 
-  router.put('/:id', use(uc.updateUser.bind(binded)));
+  router.put('/:id', hocError(uc.updateUser));
 
   return router;
 }
