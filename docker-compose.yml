@@ -11,6 +11,7 @@ services:
             - DATABASE_URL=postgres://postgres:postgres@psql-container:5432/postgres
         networks:
             - my-net
+            - user-net
         ports:
             - ${PORT}:${PORT}
         depends_on:
@@ -26,8 +27,12 @@ services:
         ports:
             - 5430:5432
         networks:
-            - my-net
+            - user-net
             
 networks:
     my-net:
         driver: bridge
+        name: my-net
+    user-net:
+        driver: bridge
+        name: user-net
