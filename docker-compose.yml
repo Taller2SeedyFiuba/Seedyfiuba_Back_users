@@ -6,19 +6,19 @@ services:
             - ./src:/app/src
         container_name: user-service
         restart: always
-        environment:
-            - PORT=8080
-            - DATABASE_URL=postgres://postgres:postgres@psql-container:5432/postgres
+        env_file:
+            - .env
         networks:
             - my-net
+            - user-net
         ports:
             - ${PORT}:${PORT}
         depends_on:
-            - psql-container
+            - psql-users
         command: npm run dev
-    psql-container:
+    psql-users:
         image: postgres
-        container_name: psql-container
+        container_name: psql-users
         environment:
             - POSTGRES_PASSWORD=postgres
         volumes:
@@ -26,8 +26,12 @@ services:
         ports:
             - 5430:5432
         networks:
-            - my-net
+            - user-net
             
 networks:
     my-net:
         driver: bridge
+        name: my-net
+    user-net:
+        driver: bridge
+        name: user-net

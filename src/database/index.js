@@ -10,7 +10,6 @@ let options = { logging: false };
 
 console.log("Conectando con base de datos: \n\t" + process.env.DATABASE_URL + "\n")
 
-//Cambiar por chequeo de produccion o desarrollo
 if (env == 'production') {
   options['logging'] = console.log
   options['dialectOptions'] = { ssl: { require: true, rejectUnauthorized: false } }
