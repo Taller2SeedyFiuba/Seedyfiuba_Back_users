@@ -22,7 +22,7 @@ const createUser = async (req, res) => {
   if (error) throw ApiError.badRequest(error.message);
 
   const userInDatabase = await getUser(req.body.id);
-  if (userInDatabase) throw ApiError.badRequest("ID already in use");
+  if (userInDatabase) throw ApiError.badRequest("id-in-use");
 
   const newUser = await createUserDb(req.body);
 
@@ -41,7 +41,7 @@ const getOneUser = async(req, res) => {
     data: user,
   });
 
-  throw ApiError.notFound("User not found");
+  throw ApiError.notFound("user-not-found");
 }
 
 const userExists = async(req, res) => {
@@ -54,9 +54,9 @@ const userExists = async(req, res) => {
 const deleteUser = async (req, res) => {
   const { id } = req.params;
   const userToDelete = await getUser(id)
-  if (!userToDelete) throw ApiError.notFound("User not found")
+  if (!userToDelete) throw ApiError.notFound("user-not-found")
   const userDeleted = await deleteUserDb(id)
-  if (!userDeleted) throw ApiError.serverError("Server error")
+  if (!userDeleted) throw ApiError.serverError("internal-server-error")
 
   return res.status(200).json({
     status: 'success',
@@ -76,10 +76,10 @@ const updateUser = async (req, res) => {
   if (error) throw ApiError.badRequest(error.message);
 
   const userToUpdate = await getUser(id);
-  if (!userToUpdate) throw ApiError.notFound("User not found");
+  if (!userToUpdate) throw ApiError.notFound("user-not-found");
 
   const userUpdated = await updateUserDb(id, finalUser)
-  if (!userUpdated) throw ApiError.serverError("Server error");
+  if (!userUpdated) throw ApiError.serverError("internal-server-error");
 
   //Me evito un query a la base haciendo esto
   for (const [key, value] of Object.entries(userToUpdate)){
