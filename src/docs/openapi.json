@@ -1,0 +1,255 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "version": "1.0.0",
+    "title": "SeedyFiuba Users Microservice",
+    "description": "API documentation for SeedyFiuba's users back microservice",
+    "contact": {
+      "name": "SeedyFiuba",
+      "url": "https://github.com/Taller2SeedyFiuba"
+    }
+  },
+  "tags": [
+    {
+      "name": "users",
+      "description": "Everything about users"
+    }
+  ],
+  "paths": {
+    "/api": {
+      "post": {
+        "tags": [
+          "users"
+        ],
+        "summary": "Create user",
+        "operationId": "createUser",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/UserBody"
+        },
+        "responses": {
+          "201": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Id already in use"
+          },
+          "default": {
+            "description": "Unexpected error"
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "users"
+        ],
+        "summary": "Returns all users.",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "limit",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Maximum number of users to retrieve"
+          },
+          {
+            "in": "query",
+            "name": "page",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Page number of users result to retrieve"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Unexpected error"
+          }
+        }
+      }
+    },
+    "/api/{id}": {
+      "get": {
+        "tags": [
+          "users"
+        ],
+        "summary": "Returns the user specified by id.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "ID of the user to retrieve"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "A user with the specified ID was not found."
+          },
+          "default": {
+            "description": "Unexpected error"
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "users"
+        ],
+        "summary": "Update user",
+        "description": "Update user information.",
+        "operationId": "updateUser",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "ID of the user to update"
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/UpdateUserBody"
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Wrong body format"
+          },
+          "default": {
+            "description": "Unexpected error"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "User": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "05yseyhiEWPNvkYYbdHL77dHKWi1"
+          },
+          "firstname": {
+            "type": "string",
+            "example": "Marcelo"
+          },
+          "lastname": {
+            "type": "string",
+            "example": "Lopez"
+          },
+          "email": {
+            "type": "string",
+            "example": "mlopez@gmail.com"
+          },
+          "birthdate": {
+            "type": "string",
+            "example": "1990-03-04"
+          },
+          "signindate": {
+            "type": "string",
+            "example": "2021-05-12"
+          }
+        }
+      }
+    },
+    "requestBodies": {
+      "UserBody": {
+        "description": "A JSON object containing user information",
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "firstname": {
+                  "type": "string",
+                  "example": "Marcelo"
+                },
+                "lastname": {
+                  "type": "string",
+                  "example": "Lopez"
+                },
+                "email": {
+                  "type": "string",
+                  "example": "mlopez@gmail.com"
+                },
+                "birthdate": {
+                  "type": "string",
+                  "example": "1990-03-04"
+                }
+              }
+            }
+          }
+        }
+      },
+      "UpdateUserBody": {
+        "description": "A JSON object containing user information",
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "firstname": {
+                  "type": "string",
+                  "example": "Marcelo"
+                },
+                "lastname": {
+                  "type": "string",
+                  "example": "Lopez"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "externalDocs": {
+    "description": "Find out more about Swagger",
+    "url": "http://swagger.io"
+  }
+}

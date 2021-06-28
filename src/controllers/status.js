@@ -1,7 +1,7 @@
-const { getStatus } = require("../models/user");
+const { getStatus: getDBStatus } = require("../models/user");
 
-async function getAPIStatus(req, res) {
-  await getStatus();
+async function getStatus(req, res) {
+  await getDBStatus();
 
   res.status(200).json({
     status: 'success',
@@ -10,4 +10,4 @@ async function getAPIStatus(req, res) {
 }
 
 
-module.exports = { getAPIStatus }
+module.exports = { getStatus }
