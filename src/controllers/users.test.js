@@ -3,7 +3,7 @@ const {
   getUsers,
   createUser,
   deleteUser,
-  updateUser } = require('./users.controller');
+  updateUser } = require('./users');
 
 jest.mock('../models/user');
 
@@ -43,7 +43,9 @@ test('/getOneUser successful response', async () => {
 });
 
 test('/getUsers successful response', async () => {
-  const req = {};
+  const req = {
+    query: {}
+  };
 
   const resObj = {
     data: {
@@ -131,9 +133,7 @@ test('/updateUser successful response', async () => {
     },
     body: {
       firstname: 'Marcelito',
-      lastname: 'Lopez',
-      email: 'mlopez@fi.uba.ar',
-      birthdate: '1900-08-08',
+      lastname: 'Lopez'
     }
   }
 

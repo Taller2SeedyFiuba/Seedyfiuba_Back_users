@@ -1,5 +1,5 @@
 const { ApiError } = require("../errors/ApiError");
-const { validateUser } = require("../models/validators");
+const validator = require("../models/validators");
 
 const {
   createUser: createUserDb,
@@ -9,7 +9,11 @@ const {
   getAllUsers, } = require("../models/user");
 
 const getUsers = async (req, res) => {
-  const users = await getAllUsers();
+  const dbParams = {
+    limit: req.query.limit,
+    page: req.query.page
+  }
+  const users = await getAllUsers(dbParams);
 
   res.status(200).json({
     status: 'success',
@@ -18,11 +22,11 @@ const getUsers = async (req, res) => {
 }
 
 const createUser = async (req, res) => {
-  const { error, value } = validateUser(req.body);
+  const { error, value } = validator.validateNewUser(req.body);
   if (error) throw ApiError.badRequest(error.message);
 
   const userInDatabase = await getUser(req.body.id);
-  if (userInDatabase) throw ApiError.badRequest("ID already in use");
+  if (userInDatabase) throw ApiError.badRequest("id-in-use");
 
   const newUser = await createUserDb(req.body);
 
@@ -41,7 +45,7 @@ const getOneUser = async(req, res) => {
     data: user,
   });
 
-  throw ApiError.notFound("User not found");
+  throw ApiError.notFound("user-not-found");
 }
 
 const userExists = async(req, res) => {
@@ -54,9 +58,9 @@ const userExists = async(req, res) => {
 const deleteUser = async (req, res) => {
   const { id } = req.params;
   const userToDelete = await getUser(id)
-  if (!userToDelete) throw ApiError.notFound("User not found")
+  if (!userToDelete) throw ApiError.notFound("user-not-found")
   const userDeleted = await deleteUserDb(id)
-  if (!userDeleted) throw ApiError.serverError("Server error")
+  if (!userDeleted) throw ApiError.serverError("internal-server-error")
 
   return res.status(200).json({
     status: 'success',
@@ -66,31 +70,20 @@ const deleteUser = async (req, res) => {
 
 const updateUser = async (req, res) => {
   const { id } = req.params;
-  const finalUser = {
-    ... req.body,
-    id,
-  };
-
-  const { error } = validateUser(finalUser);
+  const newData = req.body;
+  const { error } = validator.validateUserUpdate(newData);
 
   if (error) throw ApiError.badRequest(error.message);
 
   const userToUpdate = await getUser(id);
-  if (!userToUpdate) throw ApiError.notFound("User not found");
+  if (!userToUpdate) throw ApiError.notFound("user-not-found");
 
-  const userUpdated = await updateUserDb(id, finalUser)
-  if (!userUpdated) throw ApiError.serverError("Server error");
-
-  //Me evito un query a la base haciendo esto
-  for (const [key, value] of Object.entries(userToUpdate)){
-    if (!finalUser[key]){
-      finalUser[key] = value;
-    }
-  }
+  const userUpdated = await updateUserDb(id, newData)
+  if (!userUpdated) throw ApiError.serverError("internal-server-error");
 
   return res.status(200).json({
     status: 'success',
-    data: finalUser
+    data: userUpdated
   });
 }
 
