@@ -30,8 +30,18 @@ function validateUserUpdate(user) {
   return JoiSchema.validate(user);
 }
 
+function validateSearch(user) {
+  const JoiSchema = Joi.object({
+    page: Joi.number().positive(),
+    limit: Joi.number().positive()
+  }).options({ abortEarly: false });
 
-module.exports = { 
+  return JoiSchema.validate(user);
+}
+
+
+module.exports = {
   validateNewUser,
-  validateUserUpdate 
+  validateUserUpdate,
+  validateSearch
 };
