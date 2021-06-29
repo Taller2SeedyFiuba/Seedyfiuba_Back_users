@@ -1,5 +1,5 @@
 const { ApiError } = require("../errors/ApiError");
-const { validateUser } = require("../models/validators");
+const validator = require("../models/validators");
 
 const {
   createUser: createUserDb,
@@ -9,7 +9,11 @@ const {
   getAllUsers, } = require("../models/user");
 
 const getUsers = async (req, res) => {
-  const users = await getAllUsers();
+  const dbParams = {
+    limit: req.query.limit,
+    page: req.query.page
+  }
+  const users = await getAllUsers(dbParams);
 
   res.status(200).json({
     status: 'success',
@@ -18,7 +22,7 @@ const getUsers = async (req, res) => {
 }
 
 const createUser = async (req, res) => {
-  const { error, value } = validateUser(req.body);
+  const { error, value } = validator.validateNewUser(req.body);
   if (error) throw ApiError.badRequest(error.message);
 
   const userInDatabase = await getUser(req.body.id);
@@ -66,31 +70,20 @@ const deleteUser = async (req, res) => {
 
 const updateUser = async (req, res) => {
   const { id } = req.params;
-  const finalUser = {
-    ... req.body,
-    id,
-  };
-
-  const { error } = validateUser(finalUser);
+  const newData = req.body;
+  const { error } = validator.validateUserUpdate(newData);
 
   if (error) throw ApiError.badRequest(error.message);
 
   const userToUpdate = await getUser(id);
   if (!userToUpdate) throw ApiError.notFound("user-not-found");
 
-  const userUpdated = await updateUserDb(id, finalUser)
+  const userUpdated = await updateUserDb(id, newData)
   if (!userUpdated) throw ApiError.serverError("internal-server-error");
-
-  //Me evito un query a la base haciendo esto
-  for (const [key, value] of Object.entries(userToUpdate)){
-    if (!finalUser[key]){
-      finalUser[key] = value;
-    }
-  }
 
   return res.status(200).json({
     status: 'success',
-    data: finalUser
+    data: userUpdated
   });
 }
 

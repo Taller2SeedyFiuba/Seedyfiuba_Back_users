@@ -23,7 +23,6 @@ function createApp(log=true){
     app.use(json());
 
     //Rutas
-    console.log("Primero")
     startRoutes(app)
 
     app.use(notDefinedHandler);

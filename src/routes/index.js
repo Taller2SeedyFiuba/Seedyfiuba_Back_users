@@ -5,7 +5,7 @@ const swaggerDocument = require('../docs/openapi.json');
 
 const startRoutes = (app) => {
   
-  app.use('/users', users);
+  app.use('/api/users', users);
 
   app.get('/status', statusController.getStatus);
   

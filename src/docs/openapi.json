@@ -16,7 +16,7 @@
     }
   ],
   "paths": {
-    "/api": {
+    "/api/users": {
       "post": {
         "tags": [
           "users"
@@ -85,7 +85,7 @@
         }
       }
     },
-    "/api/{id}": {
+    "/api/users/{id}": {
       "get": {
         "tags": [
           "users"
@@ -204,6 +204,10 @@
             "schema": {
               "type": "object",
               "properties": {
+                "id": {
+                  "type": "string",
+                  "example": "05yseyhiEWPNvkYYbdHL77dHKWi1"
+                },
                 "firstname": {
                   "type": "string",
                   "example": "Marcelo"
