@@ -14,6 +14,7 @@ module.exports = (sequelize, DataTypes) => {
       signindate: {
         type: DataTypes.DATE
       },
+      isadmin: DataTypes.BOOLEAN
     }, {
       tableName: 'users',
       timestamps: false,
