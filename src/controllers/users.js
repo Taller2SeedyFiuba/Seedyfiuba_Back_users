@@ -13,6 +13,10 @@ const getUsers = async (req, res) => {
     limit: req.query.limit,
     page: req.query.page
   }
+
+  const { error } = validator.validateSearch(dbParams);
+  if (error) throw ApiError.badRequest(error.message);
+
   const users = await getAllUsers(dbParams);
 
   res.status(200).json({

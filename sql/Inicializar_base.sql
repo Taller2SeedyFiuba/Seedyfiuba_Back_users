@@ -8,7 +8,17 @@ CREATE TABLE users(
 	lastname VARCHAR(30) NOT NULL CHECK (lastname <> ''),
 	email VARCHAR(30) NOT NULL CHECK (email <> ''),
 	birthdate date NOT NULL,
-	signindate TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+	signindate TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	isadmin BOOLEAN DEFAULT FALSE
 );
 
 ALTER TABLE users ADD CONSTRAINT pk_users PRIMARY KEY(id);
+
+-- Cargamos al usuario root en el sistema
+INSERT INTO users (id, firstname, lastname, email, birthdate, isadmin)
+	VALUES ('3ozxgItXE5cZFGtYMhNAs4dvqSA2',
+			'root',
+			'root',
+			'root@seedyfiuba.com',
+			'1990-01-01',
+			TRUE);
