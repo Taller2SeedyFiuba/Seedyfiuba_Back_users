@@ -4,11 +4,11 @@ const swaggerUi = require('swagger-ui-express');
 const swaggerDocument = require('../docs/openapi.json');
 
 const startRoutes = (app) => {
-  
+
   app.use('/api/users', users);
 
-  app.get('/status', statusController.getStatus);
-  
+  app.get('/api/status', statusController.getStatus);
+
   app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 }
