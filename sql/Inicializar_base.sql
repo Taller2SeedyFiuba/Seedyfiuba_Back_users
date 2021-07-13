@@ -22,3 +22,43 @@ INSERT INTO users (id, firstname, lastname, email, birthdate, isadmin)
 			'root@seedyfiuba.com',
 			'1990-01-01',
 			TRUE);
+
+INSERT INTO users (id, firstname, lastname, email, birthdate, isadmin)
+	VALUES ('f8MPMhialjZCCB2yUMZjCPG5yTs1',
+			'entrepreneur',
+			'entrepreneur',
+			'entrepreneur@test.com',
+			'1990-01-01',
+			FALSE);
+
+INSERT INTO users (id, firstname, lastname, email, birthdate, isadmin)
+	VALUES ('qDzHIJjwNqSm8HEN308LeQXHnbq2',
+			'sponsor',
+			'sponsor',
+			'sponsor@test.com',
+			'1990-01-01',
+			FALSE);
+
+INSERT INTO users (id, firstname, lastname, email, birthdate, isadmin)
+	VALUES ('C5Jeg8M5HKaIKOqXt5bZX7IdWFk2',
+			'seer1',
+			'seer1',
+			'seer1@test.com',
+			'1990-01-01',
+			FALSE);
+
+INSERT INTO users (id, firstname, lastname, email, birthdate, isadmin)
+	VALUES ('pvs2jwbOFiZN4WOtQBYmr5LzLU53',
+			'seer2',
+			'seer2',
+			'seer2@test.com',
+			'1990-01-01',
+			FALSE);
+
+INSERT INTO users (id, firstname, lastname, email, birthdate, isadmin)
+	VALUES ('sSbHAjsWp8X3mNJ6rd1JtQB4vtU2',
+			'seer3',
+			'seer3',
+			'seer3@test.com',
+			'1990-01-01',
+			FALSE);
