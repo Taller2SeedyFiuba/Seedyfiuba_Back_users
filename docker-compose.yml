@@ -15,7 +15,6 @@ services:
             - ${PORT}:${PORT}
         depends_on:
             - psql-users
-        command: npm run dev
     psql-users:
         image: postgres
         container_name: psql-users

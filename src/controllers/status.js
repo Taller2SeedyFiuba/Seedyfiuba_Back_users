@@ -1,13 +1,16 @@
-const { getStatus: getDBStatus } = require("../models/user");
+const { checkStatus } = require("../database/index");
+const { ApiError } = require("../errors/ApiError")
+const errMsg = require("../errors/messages")
 
-async function getStatus(req, res) {
-  await getDBStatus();
+async function getDatabaseStatus(req, res) {
+  const status = await checkStatus();
 
+  if (!status)
+    throw ApiError.serverError(errMsg.DATABASE_CONNECTION_ERROR)
   res.status(200).json({
     status: 'success',
     data: null,
   })
 }
 
-
-module.exports = { getStatus }
+module.exports = { getDatabaseStatus }

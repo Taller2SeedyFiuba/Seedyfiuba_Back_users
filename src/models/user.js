@@ -1,8 +1,4 @@
-const { User, sequelize } = require("../database");
-
-const getStatus = async() => {
-  return sequelize.authenticate();
-}
+const { User } = require("../database");
 
 const createUser = async(user) => {
   return await User.create(user);
@@ -25,16 +21,15 @@ const getUser = async(id) => {
 }
 
 const getAllUsers = async(params) => {
-  const searchParams = { 
+  const searchParams = {
     'limit': params.limit || 10,
     'offset': (params.page - 1) * params.limit || 0,
-    //'raw': true 
+    //'raw': true
   }
   return await User.findAll(searchParams);
 }
 
 module.exports = {
-  getStatus,
   createUser,
   deleteUser,
   updateUser,
