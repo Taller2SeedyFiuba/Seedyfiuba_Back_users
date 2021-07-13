@@ -1,15 +1,21 @@
 const { createApp } = require("./app");
+const { port, env } = require('./config')
+const { logError, logDebug }  = require('./utils/log')
+const db = require('./database/index')
 
-const PORT = process.env.PORT || 8080;
-const ENV = process.env.NODE_ENV;
 
-try{
+const main = async function(){
+  await db.checkStatus(verbose=true);
   const app = createApp();
 
-  app.listen(PORT, () => {
-    console.log(`Servidor escuchando en http://localhost:${PORT}`);
-    console.log(`Corriendo en modo: ${ENV}`);
+  app.listen(port, () => {
+    logDebug(`Servidor escuchando en http://localhost:${port}`);
+    logDebug(`Corriendo en modo: ${env}`);
   });
-} catch(e){
-  console.log(e.message)
 }
+
+main()
+  .catch(err => {
+    logError(err.message)
+  });
+

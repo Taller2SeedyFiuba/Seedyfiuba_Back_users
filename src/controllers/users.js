@@ -1,5 +1,6 @@
 const { ApiError } = require("../errors/ApiError");
 const validator = require("../models/validators");
+const err = require("../errors/messages")
 
 const {
   createUser: createUserDb,
@@ -30,7 +31,7 @@ const createUser = async (req, res) => {
   if (error) throw ApiError.badRequest(error.message);
 
   const userInDatabase = await getUser(req.body.id);
-  if (userInDatabase) throw ApiError.badRequest("id-in-use");
+  if (userInDatabase) throw ApiError.badRequest(err.ID_IN_USE);
 
   const newUser = await createUserDb(req.body);
 
@@ -49,7 +50,7 @@ const getOneUser = async(req, res) => {
     data: user,
   });
 
-  throw ApiError.notFound("user-not-found");
+  throw ApiError.notFound(err.USER_NOT_FOUND);
 }
 
 const userExists = async(req, res) => {
@@ -62,9 +63,9 @@ const userExists = async(req, res) => {
 const deleteUser = async (req, res) => {
   const { id } = req.params;
   const userToDelete = await getUser(id)
-  if (!userToDelete) throw ApiError.notFound("user-not-found")
+  if (!userToDelete) throw ApiError.notFound(err.USER_NOT_FOUND)
   const userDeleted = await deleteUserDb(id)
-  if (!userDeleted) throw ApiError.serverError("internal-server-error")
+  if (!userDeleted) throw ApiError.serverError(err.INTERNAL_ERROR)
 
   return res.status(200).json({
     status: 'success',
@@ -80,10 +81,10 @@ const updateUser = async (req, res) => {
   if (error) throw ApiError.badRequest(error.message);
 
   const userToUpdate = await getUser(id);
-  if (!userToUpdate) throw ApiError.notFound("user-not-found");
+  if (!userToUpdate) throw ApiError.notFound(err.USER_NOT_FOUND);
 
   const userUpdated = await updateUserDb(id, newData)
-  if (!userUpdated) throw ApiError.serverError("internal-server-error");
+  if (!userUpdated) throw ApiError.serverError(err.INTERNAL_ERROR);
 
   return res.status(200).json({
     status: 'success',
