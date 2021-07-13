@@ -9,9 +9,9 @@ RUN apt-get install -y gpg apt-transport-https gpg-agent curl ca-certificates
 # Datadog ENVs
 
 
-#ENV DD_APM_ENABLED=true
-#ENV DD_DOGSTATSD_NON_LOCAL_TRAFFIC=true
-#ENV DD_DYNO_HOST=false
+ENV DD_APM_ENABLED=true
+ENV DD_DOGSTATSD_NON_LOCAL_TRAFFIC=true
+ENV DD_DYNO_HOST=false
 #ENV DD_LOGS_ENABLED=true
 #ENV DD_LOGS_CONFIG_CONTAINER_COLLECT_ALL=true
 #ENV DD_LOGS_CONFIG_DOCKER_CONTAINER_USE_FILE=true
