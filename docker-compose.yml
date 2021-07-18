@@ -10,9 +10,6 @@ services:
             - .env
         networks:
             - my-net
-            - user-net
-        ports:
-            - ${PORT}:${PORT}
         depends_on:
             - psql-users
     psql-users:
@@ -22,15 +19,10 @@ services:
             - POSTGRES_PASSWORD=postgres
         volumes:
             - ./sql/Inicializar_base.sql:/docker-entrypoint-initdb.d/init.sql
-        ports:
-            - 5430:5432
         networks:
-            - user-net
-            
+            - my-net
 networks:
-    my-net:
-        driver: bridge
-        name: my-net
-    user-net:
-        driver: bridge
-        name: user-net
+  my-net:
+    external:
+      name: my-net
+
