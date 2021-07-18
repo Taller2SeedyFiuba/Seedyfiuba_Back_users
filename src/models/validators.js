@@ -30,18 +30,30 @@ function validateUserUpdate(user) {
   return JoiSchema.validate(user);
 }
 
-function validateSearch(user) {
+function validateSearch(data) {
   const JoiSchema = Joi.object({
     page: Joi.number().positive(),
     limit: Joi.number().positive()
   }).options({ abortEarly: false });
 
-  return JoiSchema.validate(user);
+  return JoiSchema.validate(data);
+}
+
+function validateMetrics(data) {
+  const JoiSchema = Joi.object({
+    timeInterval: Joi.string().equal(...['month', 'week', 'day', 'hour', 'minute', 'second']),
+    fromDate: Joi.date(),
+    toDate: Joi.date(),
+    limit: Joi.number().positive()
+  }).options({ abortEarly: false });
+
+  return JoiSchema.validate(data);
 }
 
 
 module.exports = {
   validateNewUser,
   validateUserUpdate,
-  validateSearch
+  validateSearch,
+  validateMetrics
 };

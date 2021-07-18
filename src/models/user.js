@@ -1,4 +1,4 @@
-const { User } = require("../database");
+const { User, sequelize, Sequelize } = require("../database");
 
 const createUser = async(user) => {
   return await User.create(user);
@@ -29,10 +29,53 @@ const getAllUsers = async(params) => {
   return await User.findAll(searchParams);
 }
 
+const castAndCumulateMetric = function(data){
+  if (!data) return null
+  let sum = 0;
+  return data.map(elem => {
+    sum += Number(elem.metric)
+    elem.metric = sum
+    return elem
+  })
+}
+
+const getUsersMetrics = async(params) => {
+  aggDateFunction = sequelize.fn('date_trunc', params.timeInterval || 'day', sequelize.col('signindate'))
+
+  const searchParams = {
+    'group': [aggDateFunction],
+    'attributes': [
+      [aggDateFunction, 'timestamp'],
+      [sequelize.fn('COUNT', aggDateFunction), 'metric']
+    ],
+    'signindate': {
+      [Sequelize.Op.gte]: params.fromDate || '1800-01-01',
+      [Sequelize.Op.lte]: params.toDate || '2200-01-01'
+    },
+    'order': [[aggDateFunction, 'ASC']],
+    'raw': true
+  }
+
+  const actualadmins = await User.findOne({
+    'attributes': [[sequelize.fn('COUNT', '*'), 'total']],
+    'where': {'isadmin': true },
+    'raw': true
+  })
+
+  const result = {
+    'usershistory': castAndCumulateMetric(await User.findAll(searchParams)),
+    'actualadmins': Number(actualadmins.total)
+  }
+
+  return result
+}
+
+
 module.exports = {
   createUser,
   deleteUser,
   updateUser,
   getUser,
   getAllUsers,
+  getUsersMetrics
 };

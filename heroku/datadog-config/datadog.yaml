@@ -1,3 +1,5 @@
+logs_enabled: true
+api_key: ${DD_API_KEY}
 listeners:
   - name: docker
 config_providers:
@@ -6,7 +8,9 @@ config_providers:
     poll_interval: 1s
 process_config:
     enabled: 'true'
+logs_config:
+  container_collect_all: true
 
-hostname: users-service
+hostname: users-service-local
 
 node_version: 14.16.1

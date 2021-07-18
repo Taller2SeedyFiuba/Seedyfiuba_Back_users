@@ -1,5 +1,7 @@
 -- Inicializa la base de datos, creando las tablas y las restricciones entre ellas.
 
+SET SEARCH_PATH TO 'public';
+
 DROP TABLE IF EXISTS users;
 
 CREATE TABLE users(
@@ -16,9 +18,6 @@ ALTER TABLE users ADD CONSTRAINT pk_users PRIMARY KEY(id);
 
 -- Cargamos al usuario root en el sistema
 INSERT INTO users (id, firstname, lastname, email, birthdate, isadmin)
-	VALUES ('3ozxgItXE5cZFGtYMhNAs4dvqSA2',
-			'root',
-			'root',
-			'root@seedyfiuba.com',
-			'1990-01-01',
-			TRUE);
+	VALUES  ('3ozxgItXE5cZFGtYMhNAs4dvqSA2', 'root', 'root', 'root@seedyfiuba.com', '1990-01-01', TRUE),
+	        ('f8MPMhialjZCCB2yUMZjCPG5yTs1', 'entrepreneur', 'entrepreneur', 'entrepreneur@test.com', '1990-01-01', FALSE),
+	        ('qDzHIJjwNqSm8HEN308LeQXHnbq2', 'sponsor', 'sponsor', 'sponsor@test.com', '1990-01-01', FALSE)
