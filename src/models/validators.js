@@ -41,9 +41,9 @@ function validateSearch(data) {
 
 function validateMetrics(data) {
   const JoiSchema = Joi.object({
-    timeInterval: Joi.string().equal(...['month', 'week', 'day', 'hour', 'minute', 'second']),
-    fromDate: Joi.date(),
-    toDate: Joi.date(),
+    timeinterval: Joi.string().equal(...['month', 'week', 'day', 'hour', 'minute', 'second']),
+    fromdate: Joi.date(),
+    todate: Joi.date(),
     limit: Joi.number().positive()
   }).options({ abortEarly: false });
 
