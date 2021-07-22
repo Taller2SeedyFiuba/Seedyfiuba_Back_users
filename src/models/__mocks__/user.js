@@ -23,10 +23,6 @@ const getUser = async(id) => {
   if (id === 'testUser') return testUsr;
 }
 
-const deleteUser = async(id) => {
-  return id === 'testUser';
-}
-
 const updateUser = async(id, newData) => {
   return {
     ... testUsr,
@@ -35,4 +31,9 @@ const updateUser = async(id, newData) => {
   };
 }
 
-module.exports = { getAllUsers, createUser, getUser, deleteUser, updateUser };
+module.exports = {
+  getAllUsers,
+  createUser,
+  getUser,
+  updateUser
+};

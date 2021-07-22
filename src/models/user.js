@@ -4,10 +4,6 @@ const createUser = async(user) => {
   return await User.create(user);
 }
 
-const deleteUser = async(id) => {
-  return await User.destroy({ where: { id } });
-}
-
 const updateUser = async(id, newData) => {
   const response = await User.update(newData, { where: { id } });
   if (!response) return 0;
@@ -42,8 +38,6 @@ const castAndCumulateMetric = function(data){
 const getUsersMetrics = async(params) => {
   aggDateFunction = sequelize.fn('date_trunc', params.timeinterval || 'day', sequelize.col('signindate'))
 
-  console.log(params)
-
   const searchParams = {
     'group': [aggDateFunction],
     'attributes': [
@@ -77,7 +71,6 @@ const getUsersMetrics = async(params) => {
 
 module.exports = {
   createUser,
-  deleteUser,
   updateUser,
   getUser,
   getAllUsers,

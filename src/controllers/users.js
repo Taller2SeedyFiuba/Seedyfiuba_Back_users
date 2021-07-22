@@ -4,7 +4,6 @@ const err = require("../errors/messages")
 
 const {
   createUser: createUserDb,
-  deleteUser: deleteUserDb,
   updateUser: updateUserDb,
   getUser,
   getAllUsers, } = require("../models/user");
@@ -53,26 +52,6 @@ const getOneUser = async(req, res) => {
   throw ApiError.notFound(err.USER_NOT_FOUND);
 }
 
-const userExists = async(req, res) => {
-  const { id } = req.params;
-  const user = await getUser(id)
-  if (user) return res.status(200).json({ response: true });
-  return res.status(200).json({ response: false });
-}
-
-const deleteUser = async (req, res) => {
-  const { id } = req.params;
-  const userToDelete = await getUser(id)
-  if (!userToDelete) throw ApiError.notFound(err.USER_NOT_FOUND)
-  const userDeleted = await deleteUserDb(id)
-  if (!userDeleted) throw ApiError.serverError(err.INTERNAL_ERROR)
-
-  return res.status(200).json({
-    status: 'success',
-    data: null
-  });
-}
-
 const updateUser = async (req, res) => {
   const { id } = req.params;
   const newData = req.body;
@@ -94,9 +73,7 @@ const updateUser = async (req, res) => {
 
 module.exports = {
   getUsers,
-  userExists,
   createUser,
   getOneUser,
-  updateUser,
-  deleteUser,
+  updateUser
 }

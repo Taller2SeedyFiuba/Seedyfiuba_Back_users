@@ -2,7 +2,6 @@ const {
   getOneUser,
   getUsers,
   createUser,
-  deleteUser,
   updateUser } = require('./users');
 
 jest.mock('../models/user');
@@ -101,28 +100,6 @@ test('/createUser successful response', async () => {
   await createUser(req, res);
 
   expect(res.status).toHaveBeenCalledWith(201);
-  expect(res.json).toHaveBeenCalledWith(resObj.data);
-});
-
-test('/deleteUser successful response', async () => {
-  const req = {
-    params: {
-      id: "testUser",
-    }
-  }
-
-  const resObj = {
-    data: {
-      status: 'success',
-      data: null
-    }
-  };
-
-  const res = mockResponse();
-
-  await deleteUser(req, res);
-
-  expect(res.status).toHaveBeenCalledWith(200);
   expect(res.json).toHaveBeenCalledWith(resObj.data);
 });
 
