@@ -42,15 +42,19 @@ const castAndCumulateMetric = function(data){
 const getUsersMetrics = async(params) => {
   aggDateFunction = sequelize.fn('date_trunc', params.timeinterval || 'day', sequelize.col('signindate'))
 
+  console.log(params)
+
   const searchParams = {
     'group': [aggDateFunction],
     'attributes': [
       [aggDateFunction, 'timestamp'],
       [sequelize.fn('COUNT', aggDateFunction), 'metric']
     ],
-    'signindate': {
-      [Sequelize.Op.gte]: params.fromdate || '1800-01-01',
-      [Sequelize.Op.lte]: params.todate || '2200-01-01'
+    'where': {
+      'signindate': {
+        [Sequelize.Op.gte]: params.fromdate || '1800-01-01',
+        [Sequelize.Op.lte]: params.todate || '2200-01-01'
+      }
     },
     'order': [[aggDateFunction, 'ASC']],
     'raw': true
