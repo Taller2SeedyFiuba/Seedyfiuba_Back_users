@@ -20,7 +20,7 @@ const createUser = async(user) => {
 }
 
 const getUser = async(id) => {
-  if (id === 'testUser') return testUsr;
+  return (id === 'testUser') ? testUsr : null;
 }
 
 const updateUser = async(id, newData) => {

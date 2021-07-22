@@ -60,7 +60,7 @@ const updateUser = async (req, res) => {
   if (error) throw ApiError.badRequest(error.message);
 
   const userToUpdate = await getUser(id);
-  if (!userToUpdate) throw ApiError.notFound(err.USER_NOT_FOUND);
+  if (!userToUpdate) throw ApiError.badRequest(err.USER_NOT_FOUND);
 
   const userUpdated = await updateUserDb(id, newData)
   if (!userUpdated) throw ApiError.serverError(err.INTERNAL_ERROR);
