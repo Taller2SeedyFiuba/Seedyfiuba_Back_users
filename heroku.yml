@@ -1,0 +1,5 @@
+build:
+    docker:
+        web: Dockerfile
+run:
+    web: ./heroku/heroku-entrypoint.sh -v /var/run/docker.sock:/var/run/docker.sock:ro
