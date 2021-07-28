@@ -17,8 +17,6 @@ services:
         container_name: psql-users
         environment:
             - POSTGRES_PASSWORD=postgres
-        volumes:
-            - ./sql/Inicializar_base.sql:/docker-entrypoint-initdb.d/init.sql
         networks:
             - my-net
 networks:
