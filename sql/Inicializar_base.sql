@@ -6,9 +6,9 @@ DROP TABLE IF EXISTS users;
 
 CREATE TABLE users(
 	id VARCHAR(255) NOT NULL CHECK (id <> ''),
-	firstname VARCHAR(30) NOT NULL CHECK (firstname <> ''),
-	lastname VARCHAR(30) NOT NULL CHECK (lastname <> ''),
-	email VARCHAR(30) NOT NULL CHECK (email <> ''),
+	firstname VARCHAR(50) NOT NULL CHECK (firstname <> ''),
+	lastname VARCHAR(50) NOT NULL CHECK (lastname <> ''),
+	email VARCHAR(100) NOT NULL CHECK (email <> ''),
 	birthdate date NOT NULL,
 	signindate TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	isadmin BOOLEAN DEFAULT FALSE
