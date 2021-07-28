@@ -52,6 +52,9 @@ EXPOSE 8125/udp 8126/tcp
 
 # Copy application source code
 COPY ./src ./src
+COPY /.sequelizerc ./
+COPY /seeders ./seeders
+COPY /migrations ./migrations
 
 # Run entry point
 CMD ["bash", "heroku-entrypoint.sh"]
