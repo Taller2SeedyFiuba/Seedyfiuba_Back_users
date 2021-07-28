@@ -2,9 +2,9 @@ const Joi = require("joi");
 
 const model = {}
 model['id'] = Joi.string().max(255)
-model['firstname'] = Joi.string().min(1).max(30)
-model['lastname'] = Joi.string().min(1).max(30)
-model['email'] = Joi.string().email().min(5).max(30)
+model['firstname'] = Joi.string().min(1).max(50)
+model['lastname'] = Joi.string().min(1).max(50)
+model['email'] = Joi.string().email().min(1).max(100)
 model['birthdate'] = Joi.date(),
 model['isadmin'] = Joi.boolean()
 
