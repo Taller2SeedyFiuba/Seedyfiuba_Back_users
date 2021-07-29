@@ -11,6 +11,6 @@ process_config:
 logs_config:
   container_collect_all: true
 
-hostname: users-service-local
+hostname: users-service
 
 node_version: 14.16.1
