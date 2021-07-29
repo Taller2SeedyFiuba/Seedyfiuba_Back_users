@@ -25,8 +25,8 @@ jobs:
       - uses: akhileshns/heroku-deploy@v3.12.12 # This is the action
         with:
           heroku_api_key: ${{secrets.HEROKU_API_KEY}}
-          heroku_app_name: "seedyfiuba-back-users" #Must be unique in Heroku
-          heroku_email: "tnocetti@fi.uba.ar"
+          heroku_app_name: ${{secrets.HEROKU_APP_NAME}} #Must be unique in Heroku
+          heroku_email: "tnocetti+2@fi.uba.ar"
           usedocker: true
           docker_build_args: |
             NODE_ENV
